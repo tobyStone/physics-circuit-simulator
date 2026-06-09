@@ -62,7 +62,7 @@ export default function Simulator() {
           </p>
         </div>
 
-        <div className="flex-grow flex flex-col gap-4 pr-2 mt-4">
+        <div className="flex-grow flex flex-col gap-4 overflow-y-auto pr-2 mt-4 custom-scrollbar">
           <label className="text-xs font-semibold text-text-muted uppercase tracking-wider flex items-center gap-2">
             <Settings size={14} /> Controls
           </label>
