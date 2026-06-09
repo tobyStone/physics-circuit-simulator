@@ -43,7 +43,7 @@ export const simpleSeriesCircuit: CircuitModel = {
     }
   ],
   wirePaths: [
-    { from: 'bat1', to: 'sw1', currentSourceId: 'bat1', path: [{x: 1, y: 1}, {x: 2, y: 1}] },
+    { from: 'bat1', to: 'sw1', currentSourceId: 'bat1', path: [{x: 1, y: 2}, {x: 1, y: 1}, {x: 2, y: 1}] },
     { from: 'sw1', to: 'res1', currentSourceId: 'bat1', path: [{x: 2, y: 1}, {x: 3, y: 1}, {x: 3, y: 2}] },
     { from: 'res1', to: 'led1', currentSourceId: 'bat1', path: [{x: 3, y: 2}, {x: 3, y: 3}, {x: 2, y: 3}] },
     { from: 'led1', to: 'bat1', currentSourceId: 'bat1', path: [{x: 2, y: 3}, {x: 1, y: 3}, {x: 1, y: 2}] }
