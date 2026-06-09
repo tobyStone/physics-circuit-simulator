@@ -119,17 +119,11 @@ export default function Simulator() {
       </div>
 
       {/* Main Canvas Area */}
-      <div className="flex-1 relative bg-[radial-gradient(ellipse_at_center,_var(--color-surface)_0%,_var(--color-background)_100%)]">
-        {/* Grid Background */}
-        <div 
-          className="absolute inset-0 opacity-10" 
-          style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
-        />
+      <div className="flex-1 relative flex flex-col bg-[radial-gradient(ellipse_at_center,_var(--color-surface)_0%,_var(--color-background)_100%)]">
         
-        {/* Readings Overlay */}
-        <div className="absolute top-6 right-6 flex gap-4 z-10">
-           {/* Total Circuit Info or specific node info can go here */}
-           <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[120px]">
+        {/* Readings Overlay (Fixed) */}
+        <div className="absolute top-6 right-6 flex gap-4 z-20 pointer-events-none">
+           <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[120px] pointer-events-auto">
               <span className="text-xs text-text-muted uppercase tracking-wider mb-1">Max Current</span>
               <span className="text-2xl font-mono text-accent font-bold">
                 {Math.max(...components.map(c => c.current)).toFixed(3)}
@@ -138,8 +132,15 @@ export default function Simulator() {
            </div>
         </div>
 
-        {/* The Visual Circuit */}
-        <CircuitCanvas circuit={activeCircuit} components={components} />
+        {/* Scrollable Canvas Container */}
+        <div className="flex-1 overflow-auto relative">
+          {/* Grid Background that scrolls with content */}
+          <div 
+            className="absolute inset-0 min-w-[1500px] min-h-[1000px] opacity-10 pointer-events-none" 
+            style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
+          />
+          <CircuitCanvas circuit={activeCircuit} components={components} />
+        </div>
       </div>
 
     </div>
