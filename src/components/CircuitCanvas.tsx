@@ -100,8 +100,8 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
 function ComponentRenderer({ component }: { component: CircuitComponent }) {
   const isVertical = component.metadata?.orientation === 'vertical';
   const isActive = component.current > 0.001;
-  const strokeColor = isActive ? "var(--color-accent)" : "rgba(255, 255, 255, 0.5)";
-  const glow = isActive ? "drop-shadow(0 0 8px var(--color-accent-glow))" : "none";
+  let strokeColor = isActive ? "var(--color-accent)" : "rgba(255, 255, 255, 0.5)";
+  let glow = isActive ? "drop-shadow(0 0 8px var(--color-accent-glow))" : "none";
   const bg = "var(--color-background)";
 
   let svgContent = null;
@@ -152,18 +152,41 @@ function ComponentRenderer({ component }: { component: CircuitComponent }) {
       );
       break;
     case 'LED':
+      // Physical LED turn-on threshold (approx 1mA for visible light, full brightness at 20mA)
+      let ledBrightness = 0;
+      if (component.current > 0.001) {
+         ledBrightness = Math.max(0.1, Math.min(1, (component.current - 0.001) / 0.019));
+      }
+      
+      const ledColorStr = component.metadata?.color || 'red';
+      const cssColor = ledColorStr === 'red' ? '#ff003c' : (ledColorStr === 'green' ? '#00ff66' : '#00f0ff');
+      
+      const ledStroke = ledBrightness > 0 ? cssColor : "rgba(255, 255, 255, 0.5)";
+      
+      // Override glow for LED specifically
+      if (component.type === 'LED') {
+        glow = ledBrightness > 0 ? `drop-shadow(0 0 ${10 + ledBrightness * 20}px ${cssColor})` : "none";
+      }
+
       svgContent = (
         <>
           <rect x="0" y="0" width="60" height="60" fill={bg} />
+          {/* Wire leads (standard color) */}
           <line x1="0" y1="30" x2="15" y2="30" stroke={strokeColor} strokeWidth="2" />
           <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
-          <circle cx="30" cy="30" r="15" fill={bg} stroke={strokeColor} strokeWidth="2" />
-          <polygon points="23,20 23,40 37,30" fill="none" stroke={strokeColor} strokeWidth="2" />
-          <line x1="37" y1="20" x2="37" y2="40" stroke={strokeColor} strokeWidth="2" />
-          <line x1="40" y1="15" x2="48" y2="7" stroke={strokeColor} strokeWidth="2" />
-          <polygon points="48,7 44,7 46,11" fill={strokeColor} />
-          <line x1="45" y1="20" x2="53" y2="12" stroke={strokeColor} strokeWidth="2" />
-          <polygon points="53,12 49,12 51,16" fill={strokeColor} />
+          
+          {/* LED Body (colored based on brightness) */}
+          <g style={{ opacity: ledBrightness > 0 ? 0.3 + (ledBrightness * 0.7) : 1 }}>
+            <circle cx="30" cy="30" r="15" fill={bg} stroke={ledStroke} strokeWidth="2" />
+            <polygon points="23,20 23,40 37,30" fill="none" stroke={ledStroke} strokeWidth="2" />
+            <line x1="37" y1="20" x2="37" y2="40" stroke={ledStroke} strokeWidth="2" />
+            
+            {/* Arrows */}
+            <line x1="40" y1="15" x2="48" y2="7" stroke={ledStroke} strokeWidth="2" />
+            <polygon points="48,7 44,7 46,11" fill={ledStroke} />
+            <line x1="45" y1="20" x2="53" y2="12" stroke={ledStroke} strokeWidth="2" />
+            <polygon points="53,12 49,12 51,16" fill={ledStroke} />
+          </g>
         </>
       );
       break;
