@@ -1,6 +1,5 @@
 import { CircuitComponent, CircuitModel } from "@/lib/simulation/types";
 import { motion } from "framer-motion";
-import { Battery, Power, CircleDot, Activity, Cpu } from "lucide-react";
 
 interface CircuitCanvasProps {
   circuit: CircuitModel;
@@ -41,7 +40,7 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
                 d={pathD} 
                 fill="none" 
                 stroke={baseColor} 
-                strokeWidth="4" 
+                strokeWidth="2" 
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -52,7 +51,7 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
                   d={pathD} 
                   fill="none" 
                   stroke={activeColor} 
-                  strokeWidth="4" 
+                  strokeWidth="2" 
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeDasharray="10 15"
@@ -71,6 +70,7 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
       {components.map(c => {
         const x = (c.metadata?.x || 0) * gridSize + offsetX;
         const y = (c.metadata?.y || 0) * gridSize + offsetY;
+        const isVertical = c.metadata?.orientation === 'vertical';
         
         return (
           <motion.div
@@ -84,8 +84,11 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
               transform: 'translate(-50%, -50%)'
             }}
           >
+            <div className={`absolute ${isVertical ? '-right-24' : '-top-10'} text-xs font-bold text-text bg-background/80 px-2 rounded border border-border/30 shadow-lg whitespace-nowrap`}>
+              {c.name}
+            </div>
             <ComponentRenderer component={c} />
-            <div className="mt-2 px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border">
+            <div className={`absolute ${isVertical ? '-left-28' : '-bottom-10'} px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border`}>
               {c.voltageDrop.toFixed(2)}V | {c.current.toFixed(3)}A
             </div>
           </motion.div>
@@ -97,50 +100,106 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
 
 function ComponentRenderer({ component }: { component: CircuitComponent }) {
   const isVertical = component.metadata?.orientation === 'vertical';
-  
-  // Dynamic glow based on current or voltage
-  const glowIntensity = Math.min(1, component.current * 10); // scale arbitrary
-  const glowSize = 10 + (glowIntensity * 20);
-  
-  let icon = <Activity />;
-  let color = 'text-text-muted';
-  let glowColor = 'rgba(255,255,255,0)';
+  const isActive = component.current > 0.001;
+  const strokeColor = isActive ? "var(--color-accent)" : "rgba(255, 255, 255, 0.5)";
+  const glow = isActive ? "drop-shadow(0 0 8px var(--color-accent-glow))" : "none";
+  const bg = "var(--color-background)";
+
+  let svgContent = null;
 
   switch (component.type) {
     case 'Battery':
-      icon = <Battery size={32} />;
-      color = 'text-danger'; // Red for battery
+      svgContent = (
+        <>
+          <rect x="0" y="0" width="60" height="60" fill={bg} />
+          <line x1="0" y1="30" x2="20" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="40" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="20" y1="15" x2="20" y2="45" stroke={strokeColor} strokeWidth="2" />
+          <line x1="40" y1="20" x2="40" y2="40" stroke={strokeColor} strokeWidth="6" />
+        </>
+      );
       break;
     case 'Switch':
-      icon = <Power size={32} />;
-      color = component.value === 1 ? 'text-success' : 'text-text-muted';
-      glowColor = component.value === 1 ? 'rgba(0,255,102,0.3)' : 'rgba(0,0,0,0)';
+      svgContent = (
+        <>
+          <rect x="0" y="0" width="60" height="60" fill={bg} />
+          <line x1="0" y1="30" x2="15" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <circle cx="15" cy="30" r="3" fill={bg} stroke={strokeColor} strokeWidth="2" />
+          <circle cx="45" cy="30" r="3" fill={bg} stroke={strokeColor} strokeWidth="2" />
+          {component.value === 1 ? (
+             <line x1="15" y1="30" x2="45" y2="30" stroke={strokeColor} strokeWidth="2" />
+          ) : (
+             <line x1="15" y1="30" x2="40" y2="15" stroke={strokeColor} strokeWidth="2" />
+          )}
+        </>
+      );
       break;
     case 'Resistor':
-      icon = <Activity size={32} />;
-      color = 'text-accent';
+      const isVariable = component.metadata?.adjustable;
+      svgContent = (
+        <>
+          <rect x="0" y="0" width="60" height="60" fill={bg} />
+          <line x1="0" y1="30" x2="15" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <rect x="15" y="20" width="30" height="20" fill={bg} stroke={strokeColor} strokeWidth="2" />
+          {isVariable && (
+            <>
+              <line x1="10" y1="45" x2="50" y2="15" stroke={strokeColor} strokeWidth="2" />
+              <polygon points="50,15 45,15 48,20" fill={strokeColor} />
+            </>
+          )}
+        </>
+      );
       break;
     case 'LED':
-      icon = <CircleDot size={32} />;
-      color = component.current > 0 ? (component.metadata?.color === 'green' ? 'text-success' : 'text-danger') : 'text-text-muted';
-      glowColor = component.current > 0 
-        ? (component.metadata?.color === 'green' ? 'rgba(0,255,102,0.6)' : 'rgba(255,0,60,0.6)') 
-        : 'rgba(0,0,0,0)';
+      svgContent = (
+        <>
+          <rect x="0" y="0" width="60" height="60" fill={bg} />
+          <line x1="0" y1="30" x2="15" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <circle cx="30" cy="30" r="15" fill={bg} stroke={strokeColor} strokeWidth="2" />
+          <polygon points="23,20 23,40 37,30" fill="none" stroke={strokeColor} strokeWidth="2" />
+          <line x1="37" y1="20" x2="37" y2="40" stroke={strokeColor} strokeWidth="2" />
+          <line x1="40" y1="15" x2="48" y2="7" stroke={strokeColor} strokeWidth="2" />
+          <polygon points="48,7 44,7 46,11" fill={strokeColor} />
+          <line x1="45" y1="20" x2="53" y2="12" stroke={strokeColor} strokeWidth="2" />
+          <polygon points="53,12 49,12 51,16" fill={strokeColor} />
+        </>
+      );
       break;
     case 'TransistorNPN':
-      icon = <Cpu size={32} />;
-      color = 'text-white';
+      svgContent = (
+        <>
+          <rect x="0" y="0" width="60" height="60" fill={bg} />
+          <line x1="0" y1="30" x2="20" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="20" y1="15" x2="20" y2="45" stroke={strokeColor} strokeWidth="3" />
+          <line x1="20" y1="25" x2="40" y2="10" stroke={strokeColor} strokeWidth="2" />
+          <line x1="40" y1="10" x2="40" y2="0" stroke={strokeColor} strokeWidth="2" />
+          <line x1="20" y1="35" x2="40" y2="50" stroke={strokeColor} strokeWidth="2" />
+          <line x1="40" y1="50" x2="40" y2="60" stroke={strokeColor} strokeWidth="2" />
+          <polygon points="38,48 30,44 35,39" fill={strokeColor} transform="rotate(20 35 45)" /> 
+          <circle cx="30" cy="30" r="25" fill="none" stroke={strokeColor} strokeWidth="2" />
+        </>
+      );
       break;
+    default:
+      svgContent = (
+         <>
+           <rect x="0" y="0" width="60" height="60" fill={bg} />
+           <line x1="0" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
+         </>
+      );
   }
 
   return (
     <div 
-      className={`relative flex items-center justify-center w-16 h-16 rounded-xl glass-panel ${color} ${isVertical ? '' : 'rotate-90'}`}
-      style={{
-        boxShadow: `0 0 ${glowSize}px ${glowColor}, inset 0 0 ${glowSize/2}px ${glowColor}`
-      }}
+      className={`relative flex items-center justify-center w-[60px] h-[60px] ${isVertical ? 'rotate-90' : ''}`}
+      style={{ filter: glow }}
     >
-      {icon}
+      <svg width="60" height="60" viewBox="0 0 60 60">
+        {svgContent}
+      </svg>
     </div>
   );
 }
