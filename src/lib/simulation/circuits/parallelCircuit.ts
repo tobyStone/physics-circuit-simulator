@@ -71,34 +71,34 @@ export const simpleParallelCircuit: CircuitModel = {
   ],
   wirePaths: [
     // Battery left rail
-    { path: [{ x: 1, y: 1 }, { x: 1, y: 4 }], currentSourceId: 'bat1' },
+    { from: 'bat1', to: 'node1', path: [{ x: 1, y: 1 }, { x: 1, y: 4 }], currentSourceId: 'bat1' },
     // Top rail (before split)
-    { path: [{ x: 1, y: 1 }, { x: 3, y: 1 }], currentSourceId: 'bat1' },
+    { from: 'node1', to: 'node2', path: [{ x: 1, y: 1 }, { x: 3, y: 1 }], currentSourceId: 'bat1' },
     // Top rail (after split to branch 2)
-    { path: [{ x: 3, y: 1 }, { x: 6, y: 1 }], currentSourceId: 'mot1' },
+    { from: 'node2', to: 'mot1', path: [{ x: 3, y: 1 }, { x: 6, y: 1 }], currentSourceId: 'mot1' },
     // Bottom rail (after branch 2 joins back to main)
-    { path: [{ x: 6, y: 4 }, { x: 3, y: 4 }], currentSourceId: 'mot1' },
+    { from: 'mot1', to: 'node3', path: [{ x: 6, y: 4 }, { x: 3, y: 4 }], currentSourceId: 'mot1' },
     // Bottom rail (returning to battery)
-    { path: [{ x: 3, y: 4 }, { x: 1, y: 4 }], currentSourceId: 'bat1' },
+    { from: 'node3', to: 'bat1', path: [{ x: 3, y: 4 }, { x: 1, y: 4 }], currentSourceId: 'bat1' },
     
     // Branch 1 (Resistor + Ammeter)
-    { path: [{ x: 3, y: 1 }, { x: 3, y: 4 }], currentSourceId: 'res1' },
+    { from: 'node2', to: 'node3', path: [{ x: 3, y: 1 }, { x: 3, y: 4 }], currentSourceId: 'res1' },
     
     // Voltmeter 1 parallel wiring
-    { path: [{ x: 3, y: 1.5 }, { x: 4, y: 1.5 }], currentSourceId: 'vol1' },
-    { path: [{ x: 4, y: 1.5 }, { x: 4, y: 2.5 }], currentSourceId: 'vol1' },
-    { path: [{ x: 4, y: 2.5 }, { x: 3, y: 2.5 }], currentSourceId: 'vol1' },
+    { from: 'res1_top', to: 'vol1_top', path: [{ x: 3, y: 1.5 }, { x: 4, y: 1.5 }], currentSourceId: 'vol1' },
+    { from: 'vol1_top', to: 'vol1_bot', path: [{ x: 4, y: 1.5 }, { x: 4, y: 2.5 }], currentSourceId: 'vol1' },
+    { from: 'vol1_bot', to: 'res1_bot', path: [{ x: 4, y: 2.5 }, { x: 3, y: 2.5 }], currentSourceId: 'vol1' },
 
     // Branch 2 (Motor + Ammeter)
-    { path: [{ x: 6, y: 1 }, { x: 6, y: 4 }], currentSourceId: 'mot1' },
+    { from: 'mot1_top', to: 'mot1_bot', path: [{ x: 6, y: 1 }, { x: 6, y: 4 }], currentSourceId: 'mot1' },
 
     // Voltmeter 2 parallel wiring
-    { path: [{ x: 6, y: 1.5 }, { x: 7, y: 1.5 }], currentSourceId: 'vol2' },
-    { path: [{ x: 7, y: 1.5 }, { x: 7, y: 2.5 }], currentSourceId: 'vol2' },
-    { path: [{ x: 7, y: 2.5 }, { x: 6, y: 2.5 }], currentSourceId: 'vol2' }
+    { from: 'mot1_top', to: 'vol2_top', path: [{ x: 6, y: 1.5 }, { x: 7, y: 1.5 }], currentSourceId: 'vol2' },
+    { from: 'vol2_top', to: 'vol2_bot', path: [{ x: 7, y: 1.5 }, { x: 7, y: 2.5 }], currentSourceId: 'vol2' },
+    { from: 'vol2_bot', to: 'mot1_bot', path: [{ x: 7, y: 2.5 }, { x: 6, y: 2.5 }], currentSourceId: 'vol2' }
   ],
   
-  tick: (components) => {
+  update: (components) => {
     const battery = components.find(c => c.id === 'bat1');
     const res1 = components.find(c => c.id === 'res1');
     const mot1 = components.find(c => c.id === 'mot1');
