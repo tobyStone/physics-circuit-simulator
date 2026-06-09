@@ -62,7 +62,7 @@ export default function Simulator() {
           </p>
         </div>
 
-        <div className="flex-grow flex flex-col gap-4 overflow-y-auto pr-2 mt-4">
+        <div className="flex-grow flex flex-col gap-4 pr-2 mt-4">
           <label className="text-xs font-semibold text-text-muted uppercase tracking-wider flex items-center gap-2">
             <Settings size={14} /> Controls
           </label>
@@ -119,7 +119,7 @@ export default function Simulator() {
       </div>
 
       {/* Main Canvas Area */}
-      <div className="flex-1 relative flex flex-col bg-[radial-gradient(ellipse_at_center,_var(--color-surface)_0%,_var(--color-background)_100%)]">
+      <div className="flex-1 min-w-0 min-h-0 relative flex flex-col bg-[radial-gradient(ellipse_at_center,_var(--color-surface)_0%,_var(--color-background)_100%)]">
         
         {/* Readings Overlay (Fixed) */}
         <div className="absolute top-6 right-6 flex gap-4 z-20 pointer-events-none">
