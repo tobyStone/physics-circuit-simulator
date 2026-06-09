@@ -75,13 +75,12 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
         return (
           <motion.div
             key={c.id}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
+            initial={{ scale: 0, x: "-50%", y: "-50%" }}
+            animate={{ scale: 1, x: "-50%", y: "-50%" }}
             className="absolute z-10 flex flex-col items-center justify-center pointer-events-none"
             style={{ 
               left: x, 
-              top: y, 
-              transform: 'translate(-50%, -50%)'
+              top: y
             }}
           >
             <div className={`absolute ${isVertical ? '-right-24' : '-top-10'} text-xs font-bold text-text bg-background/80 px-2 rounded border border-border/30 shadow-lg whitespace-nowrap`}>
