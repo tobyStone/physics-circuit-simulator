@@ -205,6 +205,39 @@ function ComponentRenderer({ component }: { component: CircuitComponent }) {
         </>
       );
       break;
+    case 'Motor':
+      svgContent = (
+        <>
+          <rect x="0" y="0" width="60" height="60" fill={bg} />
+          <line x1="0" y1="30" x2="15" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <circle cx="30" cy="30" r="15" fill={bg} stroke={strokeColor} strokeWidth="2" />
+          <text x="30" y="35" fontSize="16" fontFamily="sans-serif" fontWeight="bold" fill={strokeColor} textAnchor="middle">M</text>
+        </>
+      );
+      break;
+    case 'Ammeter':
+      svgContent = (
+        <>
+          <rect x="0" y="0" width="60" height="60" fill={bg} />
+          <line x1="0" y1="30" x2="15" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <circle cx="30" cy="30" r="15" fill={bg} stroke={strokeColor} strokeWidth="2" />
+          <text x="30" y="35" fontSize="16" fontFamily="sans-serif" fontWeight="bold" fill={strokeColor} textAnchor="middle">A</text>
+        </>
+      );
+      break;
+    case 'Voltmeter':
+      svgContent = (
+        <>
+          <rect x="0" y="0" width="60" height="60" fill={bg} />
+          <line x1="0" y1="30" x2="15" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <circle cx="30" cy="30" r="15" fill={bg} stroke={strokeColor} strokeWidth="2" />
+          <text x="30" y="35" fontSize="16" fontFamily="sans-serif" fontWeight="bold" fill={strokeColor} textAnchor="middle">V</text>
+        </>
+      );
+      break;
     default:
       svgContent = (
          <>
