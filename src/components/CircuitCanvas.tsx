@@ -13,8 +13,8 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
   const offsetY = 150;
 
   return (
-    <div className="relative min-w-[1500px] min-h-[1000px] w-full h-full z-0">
-      <svg className="absolute inset-0 min-w-[1500px] min-h-[1000px] w-full h-full z-0 pointer-events-none">
+    <div className="relative min-w-[2000px] min-h-[1000px] w-full h-full z-0">
+      <svg className="absolute inset-0 min-w-[2000px] min-h-[1000px] w-full h-full z-0 pointer-events-none">
         {circuit.wirePaths?.map((wire, idx) => {
           if (!wire.path || wire.path.length < 2) return null;
           

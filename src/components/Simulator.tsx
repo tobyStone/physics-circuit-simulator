@@ -145,7 +145,7 @@ export default function Simulator() {
         <div className="flex-1 overflow-auto relative">
           {/* Grid Background that scrolls with content */}
           <div 
-            className="absolute inset-0 min-w-[1500px] min-h-[1000px] opacity-10 pointer-events-none" 
+            className="absolute inset-0 min-w-[2000px] min-h-[1000px] opacity-10 pointer-events-none" 
             style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
           />
           <CircuitCanvas circuit={activeCircuit} components={components} />
