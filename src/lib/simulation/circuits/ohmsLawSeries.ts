@@ -32,12 +32,22 @@ export const ohmsLawSeriesCircuit: CircuitModel = {
       current: 0,
       voltageDrop: 0,
       metadata: { x: 3, y: 2, orientation: 'vertical', adjustable: true, min: 10, max: 2000, step: 10, unit: 'Ω' }
+    },
+    {
+      id: 'am1',
+      type: 'Ammeter',
+      name: 'Ammeter',
+      value: 0,
+      current: 0,
+      voltageDrop: 0,
+      metadata: { x: 2, y: 3, orientation: 'horizontal' }
     }
   ],
   wirePaths: [
     { from: 'bat1_top', to: 'sw1_left', currentSourceId: 'bat1', path: [{x: 1, y: 2}, {x: 1, y: 1}, {x: 2, y: 1}] },
     { from: 'sw1_right', to: 'res1_top', currentSourceId: 'bat1', path: [{x: 2, y: 1}, {x: 3, y: 1}, {x: 3, y: 2}] },
-    { from: 'res1_bot', to: 'bat1_bot', currentSourceId: 'bat1', path: [{x: 3, y: 2}, {x: 3, y: 3}, {x: 1, y: 3}, {x: 1, y: 2}] }
+    { from: 'res1_bot', to: 'am1_right', currentSourceId: 'bat1', path: [{x: 3, y: 2}, {x: 3, y: 3}, {x: 2, y: 3}] },
+    { from: 'am1_left', to: 'bat1_bot', currentSourceId: 'bat1', path: [{x: 2, y: 3}, {x: 1, y: 3}, {x: 1, y: 2}] }
   ],
   update: (components) => {
     const battery = components.find(c => c.id === 'bat1')!;
@@ -54,6 +64,7 @@ export const ohmsLawSeriesCircuit: CircuitModel = {
       if (c.id === 'bat1') return { ...c, current, voltageDrop: battery.value };
       if (c.id === 'sw1') return { ...c, current, voltageDrop: sw.value === 0 ? battery.value : 0 };
       if (c.id === 'res1') return { ...c, current, voltageDrop: current * resistor.value };
+      if (c.id === 'am1') return { ...c, current, voltageDrop: 0 }; // Ideal ammeter has 0V drop
       return c;
     });
   }
