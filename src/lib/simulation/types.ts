@@ -14,6 +14,7 @@ export interface CircuitModel {
   id: string;
   name: string;
   description: string;
+  sqaNotes?: string;
   components: CircuitComponent[];
   wirePaths: { from: string; to: string; currentSourceId: string; path?: {x: number, y: number}[] }[];
   // The update function takes the current state of components (like if a switch was toggled or slider moved)

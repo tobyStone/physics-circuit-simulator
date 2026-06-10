@@ -4,6 +4,7 @@ export const simpleParallelCircuit: CircuitModel = {
   id: 'simple-parallel',
   name: 'Parallel Circuit (Exam Example)',
   description: 'A parallel circuit with a resistor and a motor on separate branches, complete with ammeters and voltmeters.',
+  sqaNotes: 'In SQA National 5, parallel circuits have multiple branches. The voltage across each branch is the same as the supply voltage (Vs = V1 = V2). The total current drawn from the supply is the sum of the currents in each branch (I = I1 + I2). You can see this by checking that Ammeter 1 and Ammeter 2 add up to the total Max Current, and both Voltmeters read the same 12V supply.',
   components: [
     {
       id: 'bat1',

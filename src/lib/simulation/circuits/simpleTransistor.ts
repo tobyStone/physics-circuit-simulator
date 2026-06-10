@@ -4,6 +4,7 @@ export const simpleTransistorCircuit: CircuitModel = {
   id: 'simple-transistor',
   name: 'Simple NPN Transistor Circuit',
   description: 'A circuit showing an NPN transistor acting as a switch. Apply enough voltage to the base to turn on the LED.',
+  sqaNotes: 'In SQA National 5 Physics, an NPN transistor acts as an electronic switch. It turns on when the voltage across its base-emitter junction (Vbe) is greater than 0.7V. In this simulation, try adjusting the Base Control voltage or the Base Resistor to see the threshold where the transistor conducts and the LED lights up!',
   components: [
     {
       id: 'bat1',

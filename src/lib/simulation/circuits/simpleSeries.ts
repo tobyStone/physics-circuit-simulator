@@ -4,6 +4,7 @@ export const simpleSeriesCircuit: CircuitModel = {
   id: 'simple-series',
   name: 'Simple Series Circuit',
   description: 'A basic series circuit to demonstrate Ohm\'s Law. Watch how changing the resistance or voltage affects the current and the brightness of the LED.',
+  sqaNotes: 'In SQA National 5 Physics, a series circuit has only one path for the current to flow. The current is the same at all points (I = I1 = I2). The supply voltage is shared between the components (Vs = V1 + V2). Use this simulator to verify Ohm\'s Law (V=IR) by changing the voltage and seeing the current respond.',
   components: [
     {
       id: 'bat1',

@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { getCircuitList } from "@/lib/simulation/circuits";
 import { CircuitModel, CircuitComponent } from "@/lib/simulation/types";
 import { motion } from "framer-motion";
-import { Settings, Zap, RotateCcw } from "lucide-react";
+import { Settings, Zap, RotateCcw, BookOpen, X } from "lucide-react";
 import CircuitCanvas from "./CircuitCanvas";
 
 export default function Simulator() {
   const circuits = getCircuitList();
   const [activeCircuit, setActiveCircuit] = useState<CircuitModel>(circuits[0]);
   const [components, setComponents] = useState<CircuitComponent[]>(circuits[0].components);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
 
   // Initialize and run simulation on mount or circuit change
   useEffect(() => {
@@ -60,6 +61,14 @@ export default function Simulator() {
           <p className="text-xs text-text-muted mt-2 leading-relaxed">
             {activeCircuit.description}
           </p>
+          {activeCircuit.sqaNotes && (
+            <button 
+              onClick={() => setIsNotesOpen(true)}
+              className="mt-3 flex items-center justify-center gap-2 w-full py-2 bg-accent/10 hover:bg-accent/20 border border-accent/30 rounded-lg text-sm text-accent transition-all"
+            >
+              <BookOpen size={16} /> SQA Study Notes
+            </button>
+          )}
         </div>
 
         <div className="flex-grow flex flex-col gap-4 overflow-y-auto pr-2 mt-4 custom-scrollbar">
@@ -142,6 +151,37 @@ export default function Simulator() {
           <CircuitCanvas circuit={activeCircuit} components={components} />
         </div>
       </div>
+
+      {/* SQA Notes Modal */}
+      {isNotesOpen && activeCircuit.sqaNotes && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-panel p-8 max-w-lg w-full flex flex-col gap-4 relative border border-accent/40 shadow-[0_0_30px_rgba(0,255,255,0.15)]"
+          >
+            <button 
+              onClick={() => setIsNotesOpen(false)}
+              className="absolute top-4 right-4 text-text-muted hover:text-text transition-colors"
+            >
+              <X size={20} />
+            </button>
+            <div className="flex items-center gap-3 text-accent mb-2">
+              <BookOpen size={24} />
+              <h2 className="text-xl font-bold">SQA National 5 Notes</h2>
+            </div>
+            <div className="text-sm leading-relaxed text-text/90 whitespace-pre-wrap">
+              {activeCircuit.sqaNotes}
+            </div>
+            <button 
+              onClick={() => setIsNotesOpen(false)}
+              className="mt-4 py-2 w-full bg-surface-hover border border-border rounded-lg text-sm hover:bg-surface transition-colors"
+            >
+              Close
+            </button>
+          </motion.div>
+        </div>
+      )}
 
     </div>
   );
