@@ -13,7 +13,7 @@ export const simpleTransistorCircuit: CircuitModel = {
       value: 9,
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 1, y: 1, orientation: 'vertical', adjustable: true, min: 0, max: 24, step: 1, unit: 'V' }
+      metadata: { x: 1, y: 3, orientation: 'vertical', adjustable: true, min: 0, max: 24, step: 1, unit: 'V' }
     },
     {
       id: 'bat2',
@@ -22,7 +22,7 @@ export const simpleTransistorCircuit: CircuitModel = {
       value: 0,
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 1, y: 3, orientation: 'vertical', adjustable: true, min: 0, max: 5, step: 0.1, unit: 'V' }
+      metadata: { x: 2.5, y: 4.5, orientation: 'vertical', adjustable: true, min: 0, max: 5, step: 0.1, unit: 'V' }
     },
     {
       id: 'res_c',
@@ -31,7 +31,7 @@ export const simpleTransistorCircuit: CircuitModel = {
       value: 330,
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 2, y: 1, orientation: 'horizontal', adjustable: true, min: 10, max: 2000, step: 10, unit: 'Ω' }
+      metadata: { x: 5, y: 1, orientation: 'vertical', adjustable: true, min: 10, max: 2000, step: 10, unit: 'Ω' }
     },
     {
       id: 'res_b',
@@ -40,7 +40,7 @@ export const simpleTransistorCircuit: CircuitModel = {
       value: 1000,
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 2, y: 3, orientation: 'horizontal', adjustable: true, min: 100, max: 10000, step: 100, unit: 'Ω' }
+      metadata: { x: 3.5, y: 4, orientation: 'horizontal', adjustable: true, min: 100, max: 10000, step: 100, unit: 'Ω' }
     },
     {
       id: 'led1',
@@ -49,7 +49,7 @@ export const simpleTransistorCircuit: CircuitModel = {
       value: 2, // forward drop
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 3, y: 1, orientation: 'vertical', color: 'green' }
+      metadata: { x: 5, y: 2.5, orientation: 'vertical', color: 'green' }
     },
     {
       id: 'trans1',
@@ -58,16 +58,17 @@ export const simpleTransistorCircuit: CircuitModel = {
       value: 0.7, // Base-Emitter voltage drop
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 3, y: 2, orientation: 'vertical' }
+      metadata: { x: 4.9333, y: 4, orientation: 'horizontal' }
     }
   ],
   wirePaths: [
-    { from: 'bat1', to: 'res_c', currentSourceId: 'bat1', path: [{x: 1, y: 1}, {x: 2, y: 1}] },
-    { from: 'res_c', to: 'led1', currentSourceId: 'bat1', path: [{x: 2, y: 1}, {x: 3, y: 1}] },
-    { from: 'led1', to: 'trans1', currentSourceId: 'bat1', path: [{x: 3, y: 1}, {x: 3, y: 2}] },
-    { from: 'bat2', to: 'res_b', currentSourceId: 'bat2', path: [{x: 1, y: 3}, {x: 2, y: 3}] },
-    { from: 'res_b', to: 'trans1', currentSourceId: 'bat2', path: [{x: 2, y: 3}, {x: 3, y: 3}, {x: 3, y: 2}] },
-    { from: 'trans1', to: 'return', currentSourceId: 'bat1', path: [{x: 3, y: 2}, {x: 3, y: 4}, {x: 1, y: 4}, {x: 1, y: 3}, {x: 1, y: 1}] }
+    { from: 'bat1_top', to: 'res_c_top', currentSourceId: 'bat1', path: [{x: 1, y: 2.5}, {x: 1, y: 0.5}, {x: 5, y: 0.5}] },
+    { from: 'res_c_bot', to: 'led1_top', currentSourceId: 'bat1', path: [{x: 5, y: 1.5}, {x: 5, y: 2.0}] },
+    { from: 'led1_bot', to: 'trans1_c', currentSourceId: 'bat1', path: [{x: 5, y: 3.0}, {x: 5, y: 3.5}] },
+    { from: 'trans1_e', to: 'bat1_bot', currentSourceId: 'trans1', path: [{x: 5, y: 4.5}, {x: 5, y: 5.5}, {x: 1, y: 5.5}, {x: 1, y: 3.5}] },
+    { from: 'bat2_top', to: 'res_b_left', currentSourceId: 'bat2', path: [{x: 2.5, y: 4.0}, {x: 3.0, y: 4.0}] },
+    { from: 'res_b_right', to: 'trans1_b', currentSourceId: 'bat2', path: [{x: 4.0, y: 4.0}, {x: 4.7333, y: 4.0}] },
+    { from: 'bat2_bot', to: 'gnd', currentSourceId: 'bat2', path: [{x: 2.5, y: 5.0}, {x: 2.5, y: 5.5}] }
   ],
   update: (components) => {
     const vcc = components.find(c => c.id === 'bat1')!;
