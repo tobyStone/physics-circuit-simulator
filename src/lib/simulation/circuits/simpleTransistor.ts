@@ -22,7 +22,7 @@ export const simpleTransistorCircuit: CircuitModel = {
       value: 0,
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 2.5, y: 4.5, orientation: 'vertical', adjustable: true, min: 0, max: 5, step: 0.1, unit: 'V' }
+      metadata: { x: 2.5, y: 5.0, orientation: 'vertical', adjustable: true, min: 0, max: 5, step: 0.1, unit: 'V' }
     },
     {
       id: 'res_c',
@@ -66,9 +66,9 @@ export const simpleTransistorCircuit: CircuitModel = {
     { from: 'res_c_bot', to: 'led1_top', currentSourceId: 'bat1', path: [{x: 5, y: 1}, {x: 5, y: 2.5}] },
     { from: 'led1_bot', to: 'trans1_c', currentSourceId: 'bat1', path: [{x: 5, y: 2.5}, {x: 5, y: 4}] },
     { from: 'trans1_e', to: 'bat1_bot', currentSourceId: 'trans1', path: [{x: 5, y: 4}, {x: 5, y: 5.5}, {x: 1, y: 5.5}, {x: 1, y: 3}] },
-    { from: 'bat2_top', to: 'res_b_left', currentSourceId: 'bat2', path: [{x: 2.5, y: 4.5}, {x: 2.5, y: 4}, {x: 3.5, y: 4}] },
+    { from: 'bat2_top', to: 'res_b_left', currentSourceId: 'bat2', path: [{x: 2.5, y: 5.0}, {x: 2.5, y: 4}, {x: 3.5, y: 4}] },
     { from: 'res_b_right', to: 'trans1_b', currentSourceId: 'bat2', path: [{x: 3.5, y: 4}, {x: 4.9333, y: 4}] },
-    { from: 'bat2_bot', to: 'gnd', currentSourceId: 'bat2', path: [{x: 2.5, y: 4.5}, {x: 2.5, y: 5.5}] }
+    { from: 'bat2_bot', to: 'gnd', currentSourceId: 'bat2', path: [{x: 2.5, y: 5.0}, {x: 2.5, y: 5.5}] }
   ],
   update: (components) => {
     const vcc = components.find(c => c.id === 'bat1')!;
