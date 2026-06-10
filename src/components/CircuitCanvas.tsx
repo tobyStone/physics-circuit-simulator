@@ -80,14 +80,16 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
             className="absolute z-10 flex flex-col items-center justify-center pointer-events-none"
             style={{ 
               left: x, 
-              top: y
+              top: y,
+              width: 60,
+              height: 60
             }}
           >
-            <div className={`absolute ${isVertical ? '-right-24' : '-top-10'} text-xs font-bold text-text bg-background/80 px-2 rounded border border-border/30 shadow-lg whitespace-nowrap`}>
+            <div className={`absolute z-20 ${isVertical ? 'left-full ml-4' : 'bottom-full mb-3'} text-xs font-bold text-text bg-background/80 px-2 py-1 rounded border border-border/30 shadow-lg whitespace-nowrap`}>
               {c.name}
             </div>
             <ComponentRenderer component={c} />
-            <div className={`absolute ${isVertical ? '-left-28' : '-bottom-10'} px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border`}>
+            <div className={`absolute z-20 ${isVertical ? 'right-full mr-4' : 'top-full mt-3'} px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border`}>
               {c.voltageDrop.toFixed(2)}V | {c.current.toFixed(3)}A
             </div>
           </motion.div>
