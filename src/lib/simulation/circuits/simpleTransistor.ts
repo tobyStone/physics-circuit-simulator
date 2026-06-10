@@ -34,13 +34,22 @@ export const simpleTransistorCircuit: CircuitModel = {
       metadata: { x: 5, y: 1, orientation: 'vertical', adjustable: true, min: 10, max: 2000, step: 10, unit: 'Ω' }
     },
     {
+      id: 'sw2',
+      type: 'Switch',
+      name: 'Base Switch',
+      value: 0,
+      current: 0,
+      voltageDrop: 0,
+      metadata: { x: 3.1, y: 4, orientation: 'horizontal' }
+    },
+    {
       id: 'res_b',
       type: 'Resistor',
       name: 'Base Resistor',
       value: 1000,
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 3.5, y: 4, orientation: 'horizontal', adjustable: true, min: 100, max: 10000, step: 100, unit: 'Ω' }
+      metadata: { x: 4.1, y: 4, orientation: 'horizontal', adjustable: true, min: 100, max: 10000, step: 100, unit: 'Ω' }
     },
     {
       id: 'led1',
@@ -66,8 +75,9 @@ export const simpleTransistorCircuit: CircuitModel = {
     { from: 'res_c_bot', to: 'led1_top', currentSourceId: 'bat1', path: [{x: 5, y: 1}, {x: 5, y: 2.5}] },
     { from: 'led1_bot', to: 'trans1_c', currentSourceId: 'bat1', path: [{x: 5, y: 2.5}, {x: 5, y: 4}] },
     { from: 'trans1_e', to: 'bat1_bot', currentSourceId: 'trans1', path: [{x: 5, y: 4}, {x: 5, y: 5.5}, {x: 1, y: 5.5}, {x: 1, y: 3}] },
-    { from: 'bat2_top', to: 'res_b_left', currentSourceId: 'bat2', path: [{x: 2.5, y: 5.0}, {x: 2.5, y: 4}, {x: 3.5, y: 4}] },
-    { from: 'res_b_right', to: 'trans1_b', currentSourceId: 'bat2', path: [{x: 3.5, y: 4}, {x: 4.9333, y: 4}] },
+    { from: 'bat2_top', to: 'sw2_left', currentSourceId: 'bat2', path: [{x: 2.5, y: 5.0}, {x: 2.5, y: 4}, {x: 3.1, y: 4}] },
+    { from: 'sw2_right', to: 'res_b_left', currentSourceId: 'bat2', path: [{x: 3.1, y: 4}, {x: 4.1, y: 4}] },
+    { from: 'res_b_right', to: 'trans1_b', currentSourceId: 'bat2', path: [{x: 4.1, y: 4}, {x: 4.9333, y: 4}] },
     { from: 'bat2_bot', to: 'gnd', currentSourceId: 'bat2', path: [{x: 2.5, y: 5.0}, {x: 2.5, y: 5.5}] }
   ],
   update: (components) => {
@@ -77,15 +87,16 @@ export const simpleTransistorCircuit: CircuitModel = {
     const rb = components.find(c => c.id === 'res_b')!;
     const led = components.find(c => c.id === 'led1')!;
     const npn = components.find(c => c.id === 'trans1')!;
+    const sw2 = components.find(c => c.id === 'sw2')!;
 
     // Simple NPN model:
-    // If Vbb > Vbe (0.7V), base current Ib flows.
+    // If Vbb > Vbe (0.7V) and switch is closed, base current Ib flows.
     // Collector current Ic = Beta * Ib, up to saturation.
     const beta = 100; // Gain
     const Vbe = npn.value;
     
     let Ib = 0;
-    if (vbb.value > Vbe) {
+    if (sw2.value === 1 && vbb.value > Vbe) {
       Ib = (vbb.value - Vbe) / rb.value;
     }
 
@@ -109,6 +120,7 @@ export const simpleTransistorCircuit: CircuitModel = {
       if (c.id === 'bat2') return { ...c, current: Ib, voltageDrop: vbb.value };
       if (c.id === 'res_c') return { ...c, current: Ic, voltageDrop: Ic * rc.value };
       if (c.id === 'res_b') return { ...c, current: Ib, voltageDrop: Ib * rb.value };
+      if (c.id === 'sw2') return { ...c, current: Ib, voltageDrop: sw2.value === 0 ? vbb.value : 0 };
       if (c.id === 'led1') return { ...c, current: Ic, voltageDrop: Ic > 0 ? led.value : 0 };
       if (c.id === 'trans1') return { ...c, current: Ic, voltageDrop: Vce };
       return c;
