@@ -72,7 +72,7 @@ export const simpleParallelCircuit: CircuitModel = {
   ],
   wirePaths: [
     // Battery left rail
-    { from: 'bat1', to: 'node1', path: [{ x: 1, y: 1 }, { x: 1, y: 4 }], currentSourceId: 'bat1' },
+    { from: 'bat1', to: 'node1', path: [{ x: 1, y: 4 }, { x: 1, y: 1 }], currentSourceId: 'bat1' },
     // Top rail (before split)
     { from: 'node1', to: 'node2', path: [{ x: 1, y: 1 }, { x: 3, y: 1 }], currentSourceId: 'bat1' },
     // Top rail (after split to branch 2)
