@@ -62,13 +62,13 @@ export const simpleTransistorCircuit: CircuitModel = {
     }
   ],
   wirePaths: [
-    { from: 'bat1_top', to: 'res_c_top', currentSourceId: 'bat1', path: [{x: 1, y: 2.5}, {x: 1, y: 0.5}, {x: 5, y: 0.5}] },
-    { from: 'res_c_bot', to: 'led1_top', currentSourceId: 'bat1', path: [{x: 5, y: 1.5}, {x: 5, y: 2.0}] },
-    { from: 'led1_bot', to: 'trans1_c', currentSourceId: 'bat1', path: [{x: 5, y: 3.0}, {x: 5, y: 3.5}] },
-    { from: 'trans1_e', to: 'bat1_bot', currentSourceId: 'trans1', path: [{x: 5, y: 4.5}, {x: 5, y: 5.5}, {x: 1, y: 5.5}, {x: 1, y: 3.5}] },
-    { from: 'bat2_top', to: 'res_b_left', currentSourceId: 'bat2', path: [{x: 2.5, y: 4.0}, {x: 3.0, y: 4.0}] },
-    { from: 'res_b_right', to: 'trans1_b', currentSourceId: 'bat2', path: [{x: 4.0, y: 4.0}, {x: 4.7333, y: 4.0}] },
-    { from: 'bat2_bot', to: 'gnd', currentSourceId: 'bat2', path: [{x: 2.5, y: 5.0}, {x: 2.5, y: 5.5}] }
+    { from: 'bat1_top', to: 'res_c_top', currentSourceId: 'bat1', path: [{x: 1, y: 3}, {x: 1, y: 0.5}, {x: 5, y: 0.5}, {x: 5, y: 1}] },
+    { from: 'res_c_bot', to: 'led1_top', currentSourceId: 'bat1', path: [{x: 5, y: 1}, {x: 5, y: 2.5}] },
+    { from: 'led1_bot', to: 'trans1_c', currentSourceId: 'bat1', path: [{x: 5, y: 2.5}, {x: 5, y: 4}] },
+    { from: 'trans1_e', to: 'bat1_bot', currentSourceId: 'trans1', path: [{x: 5, y: 4}, {x: 5, y: 5.5}, {x: 1, y: 5.5}, {x: 1, y: 3}] },
+    { from: 'bat2_top', to: 'res_b_left', currentSourceId: 'bat2', path: [{x: 2.5, y: 4.5}, {x: 2.5, y: 4}, {x: 3.5, y: 4}] },
+    { from: 'res_b_right', to: 'trans1_b', currentSourceId: 'bat2', path: [{x: 3.5, y: 4}, {x: 4.9333, y: 4}] },
+    { from: 'bat2_bot', to: 'gnd', currentSourceId: 'bat2', path: [{x: 2.5, y: 4.5}, {x: 2.5, y: 5.5}] }
   ],
   update: (components) => {
     const vcc = components.find(c => c.id === 'bat1')!;
