@@ -40,7 +40,7 @@ export const simpleParallelCircuit: CircuitModel = {
       value: 0,
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 4, y: 2, orientation: 'vertical' }
+      metadata: { x: 4.5, y: 2, orientation: 'vertical' }
     },
     {
       id: 'mot1',
@@ -49,7 +49,7 @@ export const simpleParallelCircuit: CircuitModel = {
       value: 24,
       current: 0,
       voltageDrop: 0,
-      metadata: { adjustable: false, x: 6, y: 2, orientation: 'vertical' }
+      metadata: { adjustable: false, x: 7.5, y: 2, orientation: 'vertical' }
     },
     {
       id: 'am2',
@@ -58,7 +58,7 @@ export const simpleParallelCircuit: CircuitModel = {
       value: 0,
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 6, y: 3.25, orientation: 'vertical' }
+      metadata: { x: 7.5, y: 3.25, orientation: 'vertical' }
     },
     {
       id: 'vol2',
@@ -67,7 +67,7 @@ export const simpleParallelCircuit: CircuitModel = {
       value: 0,
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 7, y: 2, orientation: 'vertical' }
+      metadata: { x: 9, y: 2, orientation: 'vertical' }
     }
   ],
   wirePaths: [
@@ -76,9 +76,9 @@ export const simpleParallelCircuit: CircuitModel = {
     // Top rail (before split)
     { from: 'node1', to: 'node2', path: [{ x: 1, y: 1 }, { x: 3, y: 1 }], currentSourceId: 'bat1' },
     // Top rail (after split to branch 2)
-    { from: 'node2', to: 'mot1', path: [{ x: 3, y: 1 }, { x: 6, y: 1 }], currentSourceId: 'mot1' },
+    { from: 'node2', to: 'mot1', path: [{ x: 3, y: 1 }, { x: 7.5, y: 1 }], currentSourceId: 'mot1' },
     // Bottom rail (after branch 2 joins back to main)
-    { from: 'mot1', to: 'node3', path: [{ x: 6, y: 4 }, { x: 3, y: 4 }], currentSourceId: 'mot1' },
+    { from: 'mot1', to: 'node3', path: [{ x: 7.5, y: 4 }, { x: 3, y: 4 }], currentSourceId: 'mot1' },
     // Bottom rail (returning to battery)
     { from: 'node3', to: 'bat1', path: [{ x: 3, y: 4 }, { x: 1, y: 4 }], currentSourceId: 'bat1' },
     
@@ -86,17 +86,17 @@ export const simpleParallelCircuit: CircuitModel = {
     { from: 'node2', to: 'node3', path: [{ x: 3, y: 1 }, { x: 3, y: 4 }], currentSourceId: 'res1' },
     
     // Voltmeter 1 parallel wiring
-    { from: 'res1_top', to: 'vol1_top', path: [{ x: 3, y: 1.5 }, { x: 4, y: 1.5 }], currentSourceId: 'vol1' },
-    { from: 'vol1_top', to: 'vol1_bot', path: [{ x: 4, y: 1.5 }, { x: 4, y: 2.5 }], currentSourceId: 'vol1' },
-    { from: 'vol1_bot', to: 'res1_bot', path: [{ x: 4, y: 2.5 }, { x: 3, y: 2.5 }], currentSourceId: 'vol1' },
+    { from: 'res1_top', to: 'vol1_top', path: [{ x: 3, y: 1.5 }, { x: 4.5, y: 1.5 }], currentSourceId: 'vol1' },
+    { from: 'vol1_top', to: 'vol1_bot', path: [{ x: 4.5, y: 1.5 }, { x: 4.5, y: 2.5 }], currentSourceId: 'vol1' },
+    { from: 'vol1_bot', to: 'res1_bot', path: [{ x: 4.5, y: 2.5 }, { x: 3, y: 2.5 }], currentSourceId: 'vol1' },
 
     // Branch 2 (Motor + Ammeter)
-    { from: 'mot1_top', to: 'mot1_bot', path: [{ x: 6, y: 1 }, { x: 6, y: 4 }], currentSourceId: 'mot1' },
+    { from: 'mot1_top', to: 'mot1_bot', path: [{ x: 7.5, y: 1 }, { x: 7.5, y: 4 }], currentSourceId: 'mot1' },
 
     // Voltmeter 2 parallel wiring
-    { from: 'mot1_top', to: 'vol2_top', path: [{ x: 6, y: 1.5 }, { x: 7, y: 1.5 }], currentSourceId: 'vol2' },
-    { from: 'vol2_top', to: 'vol2_bot', path: [{ x: 7, y: 1.5 }, { x: 7, y: 2.5 }], currentSourceId: 'vol2' },
-    { from: 'vol2_bot', to: 'mot1_bot', path: [{ x: 7, y: 2.5 }, { x: 6, y: 2.5 }], currentSourceId: 'vol2' }
+    { from: 'mot1_top', to: 'vol2_top', path: [{ x: 7.5, y: 1.5 }, { x: 9, y: 1.5 }], currentSourceId: 'vol2' },
+    { from: 'vol2_top', to: 'vol2_bot', path: [{ x: 9, y: 1.5 }, { x: 9, y: 2.5 }], currentSourceId: 'vol2' },
+    { from: 'vol2_bot', to: 'mot1_bot', path: [{ x: 9, y: 2.5 }, { x: 7.5, y: 2.5 }], currentSourceId: 'vol2' }
   ],
   
   update: (components) => {
