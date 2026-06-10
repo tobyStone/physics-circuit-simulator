@@ -94,7 +94,7 @@ export const simpleTransistorCircuit: CircuitModel = {
 
     if (Ib > 0) {
       // Calculate max possible Ic (Saturation)
-      const maxIc = Math.max(0, (vcc.value - led.value) / (rc.value + 1));
+      const maxIc = Math.max(0, (vcc.value - led.value) / rc.value);
       
       // Active region Ic
       const activeIc = beta * Ib;

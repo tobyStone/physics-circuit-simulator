@@ -59,8 +59,8 @@ export const simpleSeriesCircuit: CircuitModel = {
     
     if (sw.value === 1) {
       const netVoltage = Math.max(0, battery.value - led.value);
-      // Small base resistance (10 ohms) for LED to prevent infinite current if Resistor is 0
-      current = netVoltage / (resistor.value + 10);
+      // resistor.value has min: 10, so it will never be 0.
+      current = netVoltage / resistor.value;
     }
 
     return components.map(c => {
