@@ -58,7 +58,7 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
               />
               
               {/* Flow Animation Overlay */}
-              {current > 0.001 && (
+              {current > 0 && (
                 <path 
                   d={pathD} 
                   fill="none" 
@@ -113,7 +113,7 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
 
 function ComponentRenderer({ component }: { component: CircuitComponent }) {
   const isVertical = component.metadata?.orientation === 'vertical';
-  const isActive = component.current > 0.001;
+  const isActive = component.current > 0;
   let strokeColor = isActive ? "var(--color-accent)" : "rgba(255, 255, 255, 0.5)";
   let glow = isActive ? "drop-shadow(0 0 8px var(--color-accent-glow))" : "none";
   const bg = "var(--color-background)";
