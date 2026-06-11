@@ -31,7 +31,7 @@ export const ohmsLawSeriesCircuit: CircuitModel = {
       value: 1000,
       current: 0,
       voltageDrop: 0,
-      metadata: { x: 3, y: 2, orientation: 'vertical', adjustable: true, min: 10, max: 2000, step: 10, unit: 'Ω' }
+      metadata: { x: 3, y: 2, orientation: 'vertical', adjustable: true, min: 10, max: 500, step: 5, unit: 'Ω' }
     },
     {
       id: 'am1',

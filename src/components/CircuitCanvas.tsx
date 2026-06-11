@@ -69,7 +69,7 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
                   strokeDasharray="10 15"
                   className="electron-flow"
                   style={{
-                    animationDuration: `${Math.max(0.2, 2 / current)}s`
+                    animationDuration: `${Math.min(20, Math.max(0.2, 2 / current))}s`
                   }}
                 />
               )}
