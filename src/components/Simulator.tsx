@@ -4,14 +4,16 @@ import { useState, useEffect } from "react";
 import { getCircuitList } from "@/lib/simulation/circuits";
 import { CircuitModel, CircuitComponent } from "@/lib/simulation/types";
 import { motion } from "framer-motion";
-import { Settings, Zap, RotateCcw, BookOpen, X } from "lucide-react";
+import { Settings, Zap, RotateCcw, BookOpen, X, Camera } from "lucide-react";
 import CircuitCanvas from "./CircuitCanvas";
+import GenerateModal from "./GenerateModal";
 
 export default function Simulator() {
   const circuits = getCircuitList();
   const [activeCircuit, setActiveCircuit] = useState<CircuitModel>(circuits[0]);
   const [components, setComponents] = useState<CircuitComponent[]>(circuits[0].components);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
 
   // Initialize and run simulation on mount or circuit change
   useEffect(() => {
@@ -69,6 +71,13 @@ export default function Simulator() {
               <BookOpen size={16} /> SQA Study Notes
             </button>
           )}
+
+          <button 
+            onClick={() => setIsGenerateModalOpen(true)}
+            className="mt-2 flex items-center justify-center gap-2 w-full py-2 bg-[#ff00e5]/10 hover:bg-[#ff00e5]/20 border border-[#ff00e5]/30 rounded-lg text-sm text-[#ff00e5] transition-all shadow-[0_0_10px_rgba(255,0,229,0.1)]"
+          >
+            <Camera size={16} /> Generate from Image
+          </button>
         </div>
 
         <div className="flex-grow flex flex-col gap-4 overflow-y-auto pr-2 mt-4 custom-scrollbar">
@@ -182,6 +191,19 @@ export default function Simulator() {
           </motion.div>
         </div>
       )}
+
+      {/* Generate Modal */}
+      <GenerateModal 
+        isOpen={isGenerateModalOpen} 
+        onClose={() => setIsGenerateModalOpen(false)} 
+        onGenerated={(generatedCircuit) => {
+          // We add it to our active circuit list conceptually, or just set it as active
+          setActiveCircuit(generatedCircuit);
+          setComponents(generatedCircuit.components);
+          // Initial simulation run for generated circuit
+          setComponents(generatedCircuit.update(generatedCircuit.components));
+        }} 
+      />
 
     </div>
   );
