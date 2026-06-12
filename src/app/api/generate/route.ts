@@ -71,20 +71,43 @@ export async function POST(req: Request) {
 
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const modelsToTry = [
+      "gemini-1.5-pro",
+      "gemini-1.5-flash",
+      "gemini-1.5-pro-latest",
+      "gemini-1.5-flash-latest",
+      "gemini-pro-vision"
+    ];
 
-    const result = await model.generateContent([
-      SYSTEM_PROMPT,
-      {
-        inlineData: {
-          data: base64Data,
-          mimeType: "image/jpeg"
-        }
+    let responseText = null;
+    let lastError = null;
+
+    for (const modelName of modelsToTry) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent([
+          SYSTEM_PROMPT,
+          {
+            inlineData: {
+              data: base64Data,
+              mimeType: "image/jpeg"
+            }
+          }
+        ]);
+        responseText = result.response.text();
+        console.log(`Successfully generated using model: ${modelName}`);
+        break;
+      } catch (err: any) {
+        lastError = err;
+        console.warn(`Model ${modelName} failed:`, err.message);
       }
-    ]);
+    }
 
-    const response = result.response;
-    let text = response.text();
+    if (!responseText) {
+      throw lastError || new Error("All Gemini models failed to generate content.");
+    }
+    
+    let text = responseText;
     
     // Clean up markdown block if it exists
     text = text.replace(/```json\n?|\n?```/g, '').trim();
