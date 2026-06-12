@@ -57,6 +57,40 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
           throw new Error('The AI generated an invalid circuit (missing components). Please try uploading the image again.');
         }
 
+        // Deep sanitize the components to guarantee they render correctly
+        data.components = data.components.map((c: any, index: number) => {
+          return {
+            ...c,
+            id: c.id || `gen-comp-${index}`,
+            type: c.type || 'Resistor',
+            name: c.name || `Component ${index}`,
+            value: Number(c.value) || 0,
+            current: Number(c.current) || 0,
+            voltageDrop: Number(c.voltageDrop) || 0,
+            metadata: {
+              ...c.metadata,
+              // Force x and y to be small integers between 0 and 10 to ensure they stay on screen
+              x: Math.max(0, Math.min(10, Math.floor(Number(c.metadata?.x) || index % 5))),
+              y: Math.max(0, Math.min(10, Math.floor(Number(c.metadata?.y) || Math.floor(index / 5)))),
+              orientation: c.metadata?.orientation || 'horizontal',
+              adjustable: !!c.metadata?.adjustable,
+            }
+          };
+        });
+
+        // Sanitize wire paths
+        if (Array.isArray(data.wirePaths)) {
+           data.wirePaths = data.wirePaths.map((wire: any) => ({
+             ...wire,
+             path: Array.isArray(wire.path) ? wire.path.map((pt: any) => ({
+               x: Number(pt.x) || 0,
+               y: Number(pt.y) || 0
+             })) : []
+           }));
+        } else {
+           data.wirePaths = [];
+        }
+
         // We need to attach the actual executable JS function
         // WARNING: Using new Function is risky if this was a multi-user app.
         // For a teacher tool parsing AI json, it is acceptable.
