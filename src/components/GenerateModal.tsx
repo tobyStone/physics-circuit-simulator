@@ -59,6 +59,14 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
 
         // Deep sanitize the components to guarantee they render correctly
         data.components = data.components.map((c: any, index: number) => {
+          let cx = Number(c.metadata?.x);
+          let cy = Number(c.metadata?.y);
+          
+          // If the AI hallucinates pixel coordinates (e.g. x: 150, y: 200) or strings,
+          // override them with a simple grid layout so they stay on screen.
+          if (isNaN(cx) || cx > 10 || cx < 0) cx = index % 4 + 1;
+          if (isNaN(cy) || cy > 10 || cy < 0) cy = Math.floor(index / 4) + 1;
+
           return {
             ...c,
             id: c.id || `gen-comp-${index}`,
@@ -69,9 +77,8 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
             voltageDrop: Number(c.voltageDrop) || 0,
             metadata: {
               ...c.metadata,
-              // Force x and y to be small integers between 0 and 10 to ensure they stay on screen
-              x: Math.max(0, Math.min(10, Math.floor(Number(c.metadata?.x) || index % 5))),
-              y: Math.max(0, Math.min(10, Math.floor(Number(c.metadata?.y) || Math.floor(index / 5)))),
+              x: cx,
+              y: cy,
               orientation: c.metadata?.orientation || 'horizontal',
               adjustable: !!c.metadata?.adjustable,
             }
