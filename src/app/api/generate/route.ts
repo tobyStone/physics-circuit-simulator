@@ -112,6 +112,13 @@ export async function POST(req: Request) {
     // Clean up markdown block if it exists
     text = text.replace(/```json\n?|\n?```/g, '').trim();
     
+    // Extract strictly the JSON object in case the model added conversational text
+    const startIndex = text.indexOf('{');
+    const endIndex = text.lastIndexOf('}');
+    if (startIndex !== -1 && endIndex !== -1) {
+      text = text.substring(startIndex, endIndex + 1);
+    }
+
     try {
       const json = JSON.parse(text);
       return NextResponse.json(json);

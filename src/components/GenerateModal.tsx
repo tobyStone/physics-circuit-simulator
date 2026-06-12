@@ -52,10 +52,15 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
           throw new Error(data.error || 'Failed to generate circuit');
         }
 
+        if (!data || !Array.isArray(data.components)) {
+          console.error('Invalid AI Output:', data);
+          throw new Error('The AI generated an invalid circuit (missing components). Please try uploading the image again.');
+        }
+
         // We need to attach the actual executable JS function
         // WARNING: Using new Function is risky if this was a multi-user app.
         // For a teacher tool parsing AI json, it is acceptable.
-        data.update = new Function('components', data.updateFunctionBody);
+        data.update = new Function('components', data.updateFunctionBody || '');
 
         onGenerated(data as CircuitModel);
         onClose();
