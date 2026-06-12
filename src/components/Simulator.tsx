@@ -18,17 +18,30 @@ export default function Simulator() {
   // Initialize and run simulation on mount or circuit change
   useEffect(() => {
     // Run initial update
-    const updated = activeCircuit.update(activeCircuit.components);
-    setComponents(updated);
+    try {
+      const updated = activeCircuit.update(activeCircuit.components);
+      setComponents(updated || activeCircuit.components || []);
+    } catch (e) {
+      console.error("AI Update function failed:", e);
+      setComponents(activeCircuit.components || []);
+    }
   }, [activeCircuit]);
 
   const handleComponentChange = (id: string, newValue: number) => {
-    const newComponents = components.map(c => 
+    const newComponents = (components || []).map(c => 
       c.id === id ? { ...c, value: newValue } : c
     );
     // Run simulation
-    setComponents(activeCircuit.update(newComponents));
+    try {
+      const updated = activeCircuit.update(newComponents);
+      setComponents(updated || newComponents);
+    } catch (e) {
+      console.error("AI Update function failed:", e);
+      setComponents(newComponents);
+    }
   };
+
+  const safeComponents = components || [];
 
   return (
     <div className="flex h-screen w-full bg-background text-text overflow-hidden font-sans">
@@ -52,7 +65,7 @@ export default function Simulator() {
               const selected = circuits.find(c => c.id === e.target.value);
               if (selected) {
                 setActiveCircuit(selected);
-                setComponents(selected.components);
+                setComponents(selected.components || []);
               }
             }}
           >
@@ -85,7 +98,7 @@ export default function Simulator() {
             <Settings size={14} /> Controls
           </label>
           
-          {components.filter(c => c.metadata?.adjustable && c.type !== 'Switch').map(c => (
+          {safeComponents.filter(c => c.metadata?.adjustable && c.type !== 'Switch').map(c => (
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -114,8 +127,12 @@ export default function Simulator() {
         <button 
           onClick={() => {
             const initial = circuits.find(c => c.id === activeCircuit.id)!;
-            setComponents(initial.components);
-            setComponents(activeCircuit.update(initial.components));
+            setComponents(initial.components || []);
+            try {
+               setComponents(activeCircuit.update(initial.components) || initial.components);
+            } catch (e) {
+               setComponents(initial.components);
+            }
           }}
           className="flex items-center justify-center gap-2 w-full py-3 mt-auto bg-surface-hover hover:bg-surface border border-border rounded-lg text-sm text-text-muted hover:text-text transition-all"
         >
@@ -131,7 +148,7 @@ export default function Simulator() {
            <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[120px] pointer-events-auto">
               <span className="text-xs text-text-muted uppercase tracking-wider mb-1">Max Current</span>
               <span className="text-2xl font-mono text-accent font-bold">
-                {Math.max(...components.map(c => c.current)).toFixed(3)}
+                {safeComponents.length > 0 ? Math.max(...safeComponents.map(c => c.current)).toFixed(3) : "0.000"}
                 <span className="text-sm text-accent/70 ml-1">A</span>
               </span>
            </div>
@@ -146,9 +163,9 @@ export default function Simulator() {
           />
           <CircuitCanvas 
             circuit={activeCircuit} 
-            components={components} 
+            components={safeComponents} 
             onComponentClick={(id) => {
-              const c = components.find(comp => comp.id === id);
+              const c = safeComponents.find(comp => comp.id === id);
               if (c?.type === 'Switch') {
                 handleComponentChange(id, c.value === 1 ? 0 : 1);
               }
@@ -195,9 +212,13 @@ export default function Simulator() {
         onGenerated={(generatedCircuit) => {
           // We add it to our active circuit list conceptually, or just set it as active
           setActiveCircuit(generatedCircuit);
-          setComponents(generatedCircuit.components);
+          setComponents(generatedCircuit.components || []);
           // Initial simulation run for generated circuit
-          setComponents(generatedCircuit.update(generatedCircuit.components));
+          try {
+            setComponents(generatedCircuit.update(generatedCircuit.components) || generatedCircuit.components || []);
+          } catch (e) {
+            console.error("AI Update function failed:", e);
+          }
         }} 
       />
 

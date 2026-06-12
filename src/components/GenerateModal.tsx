@@ -60,7 +60,7 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
         // We need to attach the actual executable JS function
         // WARNING: Using new Function is risky if this was a multi-user app.
         // For a teacher tool parsing AI json, it is acceptable.
-        data.update = new Function('components', data.updateFunctionBody || '');
+        data.update = new Function('components', (data.updateFunctionBody || '') + '\nreturn components;');
 
         onGenerated(data as CircuitModel);
         onClose();
