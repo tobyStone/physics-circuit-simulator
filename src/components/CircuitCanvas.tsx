@@ -80,22 +80,21 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
       </svg>
 
       {/* Components Layer */}
-      {components.map(c => {
+      {components.map((c, index) => {
         const x = (c.metadata?.x || 0) * gridSize + offsetX;
         const y = (c.metadata?.y || 0) * gridSize + offsetY;
         const isVertical = c.metadata?.orientation === 'vertical';
         
         return (
-          <motion.div
-            key={c.id}
-            initial={{ scale: 0, x: "-50%", y: "-50%" }}
-            animate={{ scale: 1, x: "-50%", y: "-50%" }}
-            className={`absolute z-10 flex flex-col items-center justify-center ${c.type === 'Switch' ? 'cursor-pointer pointer-events-auto hover:scale-[1.05] active:scale-95 transition-transform' : 'pointer-events-none'}`}
+          <div
+            key={circuit.id + '-' + c.id + '-' + index}
+            className={`absolute z-10 flex flex-col items-center justify-center transition-all duration-300 ${c.type === 'Switch' ? 'cursor-pointer pointer-events-auto hover:scale-[1.05] active:scale-95' : 'pointer-events-none'}`}
             style={{ 
               left: x, 
               top: y,
               width: 60,
-              height: 60
+              height: 60,
+              transform: "translate(-50%, -50%)"
             }}
             onClick={() => onComponentClick && onComponentClick(c.id)}
           >
@@ -106,9 +105,16 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
             <div className={`absolute z-20 ${isVertical ? 'left-full bottom-0 ml-3' : 'top-full mt-3'} px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border`}>
               {c.voltageDrop.toFixed(2)}V | {formatCurrent(c.current)}
             </div>
-          </motion.div>
+          </div>
         );
       })}
+
+      {/* DEBUG OVERLAY */}
+      <div className="absolute bottom-4 left-4 z-50 bg-black/80 text-green-400 font-mono text-xs p-4 rounded max-w-lg max-h-64 overflow-auto pointer-events-auto border border-green-500/30">
+        <div className="font-bold mb-2">DEBUG INFO:</div>
+        Total Components: {components.length}
+        <pre className="mt-2">{JSON.stringify(components.map(c => ({ id: c.id, x: c.metadata?.x, y: c.metadata?.y })), null, 2)}</pre>
+      </div>
     </div>
   );
 }
