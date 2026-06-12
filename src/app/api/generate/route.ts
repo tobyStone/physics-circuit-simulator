@@ -71,7 +71,7 @@ export async function POST(req: Request) {
 
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const result = await model.generateContent([
       SYSTEM_PROMPT,
