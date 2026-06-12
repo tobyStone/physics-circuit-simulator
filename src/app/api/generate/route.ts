@@ -50,7 +50,8 @@ You must return ONLY a raw JSON object with no markdown formatting. The JSON mus
 CRITICAL RULES:
 1. Ensure all wire paths are orthogonal (x or y must remain constant between sequential points).
 2. The \`updateFunctionBody\` MUST be valid Javascript. Do NOT include \`function update(components) {\` or \`}\`. Just the inner body.
-3. Ensure the math in the update function accurately reflects National 5 Physics (e.g., V=IR, series components share current, parallel branches share voltage).`;
+3. Ensure the math in the update function accurately reflects National 5 Physics (e.g., V=IR, series components share current, parallel branches share voltage).
+4. Do NOT set 'adjustable': true for Switches. Switches are toggled by the user clicking directly on the component in the diagram, not via a slider.`;
 
 export async function POST(req: Request) {
   try {

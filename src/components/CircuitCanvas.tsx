@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 interface CircuitCanvasProps {
   circuit: CircuitModel;
   components: CircuitComponent[];
+  onComponentClick?: (id: string) => void;
 }
 
-export default function CircuitCanvas({ circuit, components }: CircuitCanvasProps) {
+export default function CircuitCanvas({ circuit, components, onComponentClick }: CircuitCanvasProps) {
   // Grid settings
   const gridSize = 150;
   const offsetX = 200;
@@ -89,13 +90,14 @@ export default function CircuitCanvas({ circuit, components }: CircuitCanvasProp
             key={c.id}
             initial={{ scale: 0, x: "-50%", y: "-50%" }}
             animate={{ scale: 1, x: "-50%", y: "-50%" }}
-            className="absolute z-10 flex flex-col items-center justify-center pointer-events-none"
+            className={`absolute z-10 flex flex-col items-center justify-center ${c.type === 'Switch' ? 'cursor-pointer pointer-events-auto hover:scale-[1.05] active:scale-95 transition-transform' : 'pointer-events-none'}`}
             style={{ 
               left: x, 
               top: y,
               width: 60,
               height: 60
             }}
+            onClick={() => onComponentClick && onComponentClick(c.id)}
           >
             <div className={`absolute z-20 ${isVertical ? 'left-full top-0 ml-3' : 'bottom-full mb-3'} text-xs font-bold text-text bg-background/80 px-2 py-1 rounded border border-border/30 shadow-lg whitespace-nowrap`}>
               {c.name}

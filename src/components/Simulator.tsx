@@ -85,7 +85,7 @@ export default function Simulator() {
             <Settings size={14} /> Controls
           </label>
           
-          {components.filter(c => c.metadata?.adjustable || c.type === 'Switch').map(c => (
+          {components.filter(c => c.metadata?.adjustable && c.type !== 'Switch').map(c => (
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -95,31 +95,18 @@ export default function Simulator() {
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">{c.name}</span>
                 <span className="text-xs font-mono bg-black/30 px-2 py-1 rounded text-accent">
-                  {c.type === 'Switch' ? (c.value === 1 ? 'ON' : 'OFF') : `${c.value} ${c.metadata?.unit || ''}`}
+                  {`${c.value} ${c.metadata?.unit || ''}`}
                 </span>
               </div>
               
-              {c.type === 'Switch' ? (
-                <button 
-                  onClick={() => handleComponentChange(c.id, c.value === 1 ? 0 : 1)}
-                  className={`w-full py-2 rounded-md transition-all font-medium text-sm ${
-                    c.value === 1 
-                      ? 'bg-success/20 text-success border border-success/50 shadow-[0_0_10px_rgba(0,255,102,0.2)]' 
-                      : 'bg-surface-hover text-text border border-border'
-                  }`}
-                >
-                  {c.value === 1 ? 'Close Switch (ON)' : 'Open Switch (OFF)'}
-                </button>
-              ) : (
-                <input 
-                  type="range" 
-                  min={c.metadata?.min || 0} 
-                  max={c.metadata?.max || 100} 
-                  step={c.metadata?.step || 1}
-                  value={c.value}
-                  onChange={(e) => handleComponentChange(c.id, parseFloat(e.target.value))}
-                />
-              )}
+              <input 
+                type="range" 
+                min={c.metadata?.min || 0} 
+                max={c.metadata?.max || 100} 
+                step={c.metadata?.step || 1}
+                value={c.value}
+                onChange={(e) => handleComponentChange(c.id, parseFloat(e.target.value))}
+              />
             </motion.div>
           ))}
         </div>
@@ -157,7 +144,16 @@ export default function Simulator() {
             className="absolute inset-0 min-w-[2000px] min-h-[1000px] opacity-10 pointer-events-none" 
             style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
           />
-          <CircuitCanvas circuit={activeCircuit} components={components} />
+          <CircuitCanvas 
+            circuit={activeCircuit} 
+            components={components} 
+            onComponentClick={(id) => {
+              const c = components.find(comp => comp.id === id);
+              if (c?.type === 'Switch') {
+                handleComponentChange(id, c.value === 1 ? 0 : 1);
+              }
+            }}
+          />
         </div>
       </div>
 
