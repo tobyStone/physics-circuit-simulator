@@ -120,40 +120,38 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
              const x2 = toComp.metadata.x;
              const y2 = toComp.metadata.y;
              
-             const fromHorizontal = fromComp.metadata.orientation !== 'vertical';
-             const toHorizontal = toComp.metadata.orientation !== 'vertical';
+             // Check if AI provided a valid custom path
+             let aiPath = Array.isArray(wire.path) ? wire.path.map((pt: any) => ({
+                 x: Number(pt.x) || 0,
+                 y: Number(pt.y) || 0
+             })) : [];
+             
+             const isValidAiPath = aiPath.length >= 2 && aiPath.every((pt: any) => pt.x <= 20 && pt.y <= 20 && pt.x >= 0 && pt.y >= 0);
 
-             // Orientation-aware routing: ensure wires leave and enter components along their primary axis
-             if (fromHorizontal && toHorizontal) {
-                // Leave horizontally, travel vertically, enter horizontally
-                path = [
-                  {x: x1, y: y1},
-                  {x: (x1 + x2) / 2, y: y1},
-                  {x: (x1 + x2) / 2, y: y2},
-                  {x: x2, y: y2}
-                ];
-             } else if (!fromHorizontal && !toHorizontal) {
-                // Leave vertically, travel horizontally, enter vertically
-                path = [
-                  {x: x1, y: y1},
-                  {x: x1, y: (y1 + y2) / 2},
-                  {x: x2, y: (y1 + y2) / 2},
-                  {x: x2, y: y2}
-                ];
-             } else if (fromHorizontal && !toHorizontal) {
-                // Leave horizontally, enter vertically
-                path = [
-                  {x: x1, y: y1},
-                  {x: x2, y: y1},
-                  {x: x2, y: y2}
-                ];
+             if (isValidAiPath) {
+                 // Trust AI's routing to allow tall loops and custom corners,
+                 // but anchor the start and end exactly to the component centers to prevent gaps!
+                 aiPath[0] = { x: x1, y: y1 };
+                 aiPath[aiPath.length - 1] = { x: x2, y: y2 };
+                 
+                 // If the path needs to enter vertically/horizontally, we can let the AI's path handle it,
+                 // or inject a tiny alignment segment if it looks jagged. But anchoring is usually enough.
+                 path = aiPath;
              } else {
-                // Leave vertically, enter horizontally
-                path = [
-                  {x: x1, y: y1},
-                  {x: x1, y: y2},
-                  {x: x2, y: y2}
-                ];
+                 // Fallback: Smart Midpoint Auto-Routing if AI hallucinates or forgets path
+                 const fromHorizontal = fromComp.metadata.orientation !== 'vertical';
+                 const toHorizontal = toComp.metadata.orientation !== 'vertical';
+
+                 // Orientation-aware routing: ensure wires leave and enter components along their primary axis
+                 if (fromHorizontal && toHorizontal) {
+                    path = [{x: x1, y: y1}, {x: (x1 + x2) / 2, y: y1}, {x: (x1 + x2) / 2, y: y2}, {x: x2, y: y2}];
+                 } else if (!fromHorizontal && !toHorizontal) {
+                    path = [{x: x1, y: y1}, {x: x1, y: (y1 + y2) / 2}, {x: x2, y: (y1 + y2) / 2}, {x: x2, y: y2}];
+                 } else if (fromHorizontal && !toHorizontal) {
+                    path = [{x: x1, y: y1}, {x: x2, y: y1}, {x: x2, y: y2}];
+                 } else {
+                    path = [{x: x1, y: y1}, {x: x1, y: y2}, {x: x2, y: y2}];
+                 }
              }
           } else if (Array.isArray(wire.path)) {
              // Fallback
