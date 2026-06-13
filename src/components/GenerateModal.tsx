@@ -85,46 +85,85 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
           };
         });
 
-        // Smart Auto-Routing for Wires
-        // The AI struggles to draw perfect orthogonal paths, so we ignore its path and calculate a perfect L-shape route based on the actual components.
-        if (Array.isArray(data.wirePaths)) {
-           data.wirePaths = data.wirePaths.map((wire: any) => {
-             const fromComp = data.components.find((c: any) => c.id === wire.from);
-             const toComp = data.components.find((c: any) => c.id === wire.to);
-             
-             let path = [];
-             if (fromComp && toComp) {
-                const x1 = fromComp.metadata.x;
-                const y1 = fromComp.metadata.y;
-                const x2 = toComp.metadata.x;
-                const y2 = toComp.metadata.y;
-                
-                // Simple orthogonal L-shape routing
-                // Prefer going horizontally first, then vertically, unless it's a direct line
-                if (x1 === x2 || y1 === y2) {
-                   path = [{x: x1, y: y1}, {x: x2, y: y2}];
-                } else {
-                   // Calculate bounding box center to decide routing strategy
-                   // For a standard loop, if moving right, go horizontal first
-                   // If moving down, go vertical first
-                   path = [{x: x1, y: y1}, {x: x2, y: y1}, {x: x2, y: y2}];
-                }
-             } else if (Array.isArray(wire.path)) {
-                // Fallback to AI's path if from/to are missing
-                path = wire.path.map((pt: any) => ({
-                  x: Number(pt.x) || 0,
-                  y: Number(pt.y) || 0
-                }));
-             }
-
-             return {
-               ...wire,
-               path
-             };
-           });
-        } else {
+        if (!Array.isArray(data.wirePaths)) {
            data.wirePaths = [];
         }
+
+        // 1. Auto-close open loops (AI frequently forgets the return wire to the battery)
+        const connections: Record<string, number> = {};
+        data.components.forEach((c: any) => connections[c.id] = 0);
+        data.wirePaths.forEach((w: any) => {
+            if (connections[w.from] !== undefined) connections[w.from]++;
+            if (connections[w.to] !== undefined) connections[w.to]++;
+        });
+        
+        // Find main components (ignore voltmeters as they are parallel) that only have 1 wire connected
+        const endpoints = data.components.filter((c: any) => c.type !== 'Voltmeter' && connections[c.id] === 1);
+        if (endpoints.length === 2) {
+            data.wirePaths.push({
+                from: endpoints[0].id,
+                to: endpoints[1].id,
+                currentSourceId: data.components.find((c: any) => c.type === 'Battery')?.id || endpoints[0].id
+            });
+        }
+
+        // 2. Smart Orientation-Aware Auto-Routing
+        data.wirePaths = data.wirePaths.map((wire: any) => {
+          const fromComp = data.components.find((c: any) => c.id === wire.from);
+          const toComp = data.components.find((c: any) => c.id === wire.to);
+          
+          let path = [];
+          if (fromComp && toComp) {
+             const x1 = fromComp.metadata.x;
+             const y1 = fromComp.metadata.y;
+             const x2 = toComp.metadata.x;
+             const y2 = toComp.metadata.y;
+             
+             const fromHorizontal = fromComp.metadata.orientation !== 'vertical';
+             const toHorizontal = toComp.metadata.orientation !== 'vertical';
+
+             // Orientation-aware routing: ensure wires leave and enter components along their primary axis
+             if (fromHorizontal && toHorizontal) {
+                // Leave horizontally, travel vertically, enter horizontally
+                path = [
+                  {x: x1, y: y1},
+                  {x: (x1 + x2) / 2, y: y1},
+                  {x: (x1 + x2) / 2, y: y2},
+                  {x: x2, y: y2}
+                ];
+             } else if (!fromHorizontal && !toHorizontal) {
+                // Leave vertically, travel horizontally, enter vertically
+                path = [
+                  {x: x1, y: y1},
+                  {x: x1, y: (y1 + y2) / 2},
+                  {x: x2, y: (y1 + y2) / 2},
+                  {x: x2, y: y2}
+                ];
+             } else if (fromHorizontal && !toHorizontal) {
+                // Leave horizontally, enter vertically
+                path = [
+                  {x: x1, y: y1},
+                  {x: x2, y: y1},
+                  {x: x2, y: y2}
+                ];
+             } else {
+                // Leave vertically, enter horizontally
+                path = [
+                  {x: x1, y: y1},
+                  {x: x1, y: y2},
+                  {x: x2, y: y2}
+                ];
+             }
+          } else if (Array.isArray(wire.path)) {
+             // Fallback
+             path = wire.path.map((pt: any) => ({
+               x: Number(pt.x) || 0,
+               y: Number(pt.y) || 0
+             }));
+          }
+
+          return { ...wire, path };
+        });
 
         // We need to attach the actual executable JS function
         // WARNING: Using new Function is risky if this was a multi-user app.
