@@ -51,7 +51,21 @@ CRITICAL RULES:
 1. Ensure all wire paths are orthogonal (x or y must remain constant between sequential points).
 2. The \`updateFunctionBody\` MUST be valid Javascript. Do NOT include \`function update(components) {\` or \`}\`. Just the inner body.
 3. Ensure the math in the update function accurately reflects National 5 Physics (e.g., V=IR, series components share current, parallel branches share voltage).
-4. Do NOT set 'adjustable': true for Switches. Switches are toggled by the user clicking directly on the component in the diagram, not via a slider.`;
+4. Do NOT set 'adjustable': true for Switches. Switches are toggled by the user clicking directly on the component in the diagram, not via a slider.
+
+EXAMPLE SERIES LOOP LAYOUT:
+If the user uploads a simple series circuit (e.g., battery on left, resistors on right), map it to a rectangular loop on the grid.
+- Battery on the left: x: 1, y: 2 (orientation: vertical)
+- Switch on top: x: 2, y: 1 (orientation: horizontal)
+- Resistor on right: x: 3, y: 2 (orientation: vertical)
+- Ammeter on bottom: x: 2, y: 3 (orientation: horizontal)
+Wire Paths to connect them in a loop:
+- bat to sw: path: [ {"x": 1, "y": 2}, {"x": 1, "y": 1}, {"x": 2, "y": 1} ]
+- sw to res: path: [ {"x": 2, "y": 1}, {"x": 3, "y": 1}, {"x": 3, "y": 2} ]
+- res to ammeter: path: [ {"x": 3, "y": 2}, {"x": 3, "y": 3}, {"x": 2, "y": 3} ]
+- ammeter to bat: path: [ {"x": 2, "y": 3}, {"x": 1, "y": 3}, {"x": 1, "y": 2} ]
+This will create a beautiful, perfectly connected rectangular circuit.
+Always aim for rectangular loops and orthogonal paths!`;
 
 export async function POST(req: Request) {
   try {
