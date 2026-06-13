@@ -49,24 +49,26 @@ You must return ONLY a raw JSON object with no markdown formatting. The JSON mus
 
 CRITICAL RULES:
 1. Ensure all wire paths are orthogonal (x or y must remain constant between sequential points).
-2. The \`updateFunctionBody\` MUST be valid Javascript. Do NOT include \`function update(components) {\` or \`}\`. Just the inner body.
-3. Ensure the math in the update function accurately reflects National 5 Physics (e.g., V=IR, series components share current, parallel branches share voltage).
-4. Do NOT set 'adjustable': true for Switches. Switches are toggled by the user clicking directly on the component in the diagram, not via a slider.
+2. The \`updateFunctionBody\` MUST be valid Javascript.
+3. Components on the LEFT or RIGHT vertical branches MUST have \`"orientation": "vertical"\`.
+4. Components on the TOP or BOTTOM horizontal branches MUST have \`"orientation": "horizontal"\`.
 
-EXAMPLE SPACIOUS LOOP LAYOUT (Very Important):
-To make the circuit visually clear, you MUST space components out widely. Create a large, spacious rectangular loop. Do NOT cluster components tightly together.
+EXAMPLE SPACIOUS TALL LOOP LAYOUT:
+If the user uploads a tall circuit with 2 resistors on the right branch and a voltmeter across one of them:
 - Battery on the far left: x: 1, y: 3 (orientation: vertical)
 - Top wire goes from x: 1, y: 1 to x: 5, y: 1
-- Resistor 1 on the top branch: x: 3, y: 1 (orientation: horizontal)
-- Resistor 2 on the far right: x: 5, y: 3 (orientation: vertical)
+- Resistor 1 on the top-right vertical branch: x: 5, y: 2 (orientation: vertical)
+- Resistor 2 on the bottom-right vertical branch: x: 5, y: 4 (orientation: vertical)
 - Bottom wire goes from x: 5, y: 5 to x: 1, y: 5
-- Ammeter on the bottom branch: x: 3, y: 5 (orientation: horizontal)
+- Voltmeter in parallel across Resistor 2: x: 6, y: 4 (orientation: vertical)
+Wire Paths:
+- bat to res1: path: [ {"x": 1, "y": 3}, {"x": 1, "y": 1}, {"x": 5, "y": 1}, {"x": 5, "y": 2} ]
+- res1 to res2: path: [ {"x": 5, "y": 2}, {"x": 5, "y": 4} ]
+- res2 to bat: path: [ {"x": 5, "y": 4}, {"x": 5, "y": 5}, {"x": 1, "y": 5}, {"x": 1, "y": 3} ]
+- voltmeter top wire: from res1/res2 junction to voltmeter: path: [ {"x": 5, "y": 3}, {"x": 6, "y": 3}, {"x": 6, "y": 4} ]
+- voltmeter bottom wire: from voltmeter to res2 bottom: path: [ {"x": 6, "y": 4}, {"x": 6, "y": 5}, {"x": 5, "y": 5} ]
 
-If there is a voltmeter in parallel across Resistor 2, place it further out:
-- Voltmeter: x: 6, y: 3 (orientation: vertical)
-- Voltmeter wires: Connect from x:5,y:2 to x:6,y:2 to Voltmeter, and from Voltmeter to x:6,y:4 to x:5,y:4.
-
-Always aim for large, beautifully spaced rectangular loops (e.g. using coordinates 1 through 6) and perfect orthogonal paths!`;
+Always make the circuit tall and spacious. Set orientations strictly based on the branch the component is on!`;
 
 export async function POST(req: Request) {
   try {
