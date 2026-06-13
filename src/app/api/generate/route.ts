@@ -55,12 +55,12 @@ CRITICAL RULES:
 
 EXAMPLE SPACIOUS TALL LOOP LAYOUT:
 If the user uploads a tall circuit with 2 resistors on the right branch and a voltmeter across one of them:
-- Battery on the far left: x: 1, y: 3 (orientation: vertical)
+- Battery on the far left: metadata.x: 1, metadata.y: 3 (metadata.orientation: "vertical")
 - Top wire goes from x: 1, y: 1 to x: 5, y: 1
-- Resistor 1 on the top-right vertical branch: x: 5, y: 2 (orientation: vertical)
-- Resistor 2 on the bottom-right vertical branch: x: 5, y: 4 (orientation: vertical)
+- Resistor 1 on the top-right vertical branch: metadata.x: 5, metadata.y: 2 (metadata.orientation: "vertical")
+- Resistor 2 on the bottom-right vertical branch: metadata.x: 5, metadata.y: 4 (metadata.orientation: "vertical")
 - Bottom wire goes from x: 5, y: 5 to x: 1, y: 5
-- Voltmeter in parallel across Resistor 2: x: 6, y: 4 (orientation: vertical)
+- Voltmeter in parallel across Resistor 2: metadata.x: 6, metadata.y: 4 (metadata.orientation: "vertical")
 Wire Paths:
 - bat to res1: path: [ {"x": 1, "y": 3}, {"x": 1, "y": 1}, {"x": 5, "y": 1}, {"x": 5, "y": 2} ]
 - res1 to res2: path: [ {"x": 5, "y": 2}, {"x": 5, "y": 4} ]

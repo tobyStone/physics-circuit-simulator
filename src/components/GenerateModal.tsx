@@ -59,13 +59,14 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
 
         // Deep sanitize the components to guarantee they render correctly
         data.components = data.components.map((c: any, index: number) => {
-          let cx = Number(c.metadata?.x);
-          let cy = Number(c.metadata?.y);
+          let cx = Number(c.metadata?.x ?? c.x);
+          let cy = Number(c.metadata?.y ?? c.y);
+          let orientation = c.metadata?.orientation || c.orientation || 'horizontal';
           
           // If the AI hallucinates pixel coordinates (e.g. x: 150, y: 200) or strings,
-          // override them with a simple grid layout so they stay on screen.
-          if (isNaN(cx) || cx > 10 || cx < 0) cx = index % 4 + 1;
-          if (isNaN(cy) || cy > 10 || cy < 0) cy = Math.floor(index / 4) + 1;
+          // override them with a default square loop layout so it's not a straight line
+          if (isNaN(cx) || cx > 20 || cx < 0) cx = [1, 3, 5, 3][index % 4];
+          if (isNaN(cy) || cy > 20 || cy < 0) cy = [3, 1, 3, 5][index % 4];
 
           return {
             ...c,
@@ -79,8 +80,8 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
               ...c.metadata,
               x: cx,
               y: cy,
-              orientation: c.metadata?.orientation || 'horizontal',
-              adjustable: !!c.metadata?.adjustable,
+              orientation: orientation,
+              adjustable: !!(c.metadata?.adjustable ?? c.adjustable),
             }
           };
         });
