@@ -85,15 +85,43 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
           };
         });
 
-        // Sanitize wire paths
+        // Smart Auto-Routing for Wires
+        // The AI struggles to draw perfect orthogonal paths, so we ignore its path and calculate a perfect L-shape route based on the actual components.
         if (Array.isArray(data.wirePaths)) {
-           data.wirePaths = data.wirePaths.map((wire: any) => ({
-             ...wire,
-             path: Array.isArray(wire.path) ? wire.path.map((pt: any) => ({
-               x: Number(pt.x) || 0,
-               y: Number(pt.y) || 0
-             })) : []
-           }));
+           data.wirePaths = data.wirePaths.map((wire: any) => {
+             const fromComp = data.components.find((c: any) => c.id === wire.from);
+             const toComp = data.components.find((c: any) => c.id === wire.to);
+             
+             let path = [];
+             if (fromComp && toComp) {
+                const x1 = fromComp.metadata.x;
+                const y1 = fromComp.metadata.y;
+                const x2 = toComp.metadata.x;
+                const y2 = toComp.metadata.y;
+                
+                // Simple orthogonal L-shape routing
+                // Prefer going horizontally first, then vertically, unless it's a direct line
+                if (x1 === x2 || y1 === y2) {
+                   path = [{x: x1, y: y1}, {x: x2, y: y2}];
+                } else {
+                   // Calculate bounding box center to decide routing strategy
+                   // For a standard loop, if moving right, go horizontal first
+                   // If moving down, go vertical first
+                   path = [{x: x1, y: y1}, {x: x2, y: y1}, {x: x2, y: y2}];
+                }
+             } else if (Array.isArray(wire.path)) {
+                // Fallback to AI's path if from/to are missing
+                path = wire.path.map((pt: any) => ({
+                  x: Number(pt.x) || 0,
+                  y: Number(pt.y) || 0
+                }));
+             }
+
+             return {
+               ...wire,
+               path
+             };
+           });
         } else {
            data.wirePaths = [];
         }

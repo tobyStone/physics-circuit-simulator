@@ -53,19 +53,20 @@ CRITICAL RULES:
 3. Ensure the math in the update function accurately reflects National 5 Physics (e.g., V=IR, series components share current, parallel branches share voltage).
 4. Do NOT set 'adjustable': true for Switches. Switches are toggled by the user clicking directly on the component in the diagram, not via a slider.
 
-EXAMPLE SERIES LOOP LAYOUT:
-If the user uploads a simple series circuit (e.g., battery on left, resistors on right), map it to a rectangular loop on the grid.
-- Battery on the left: x: 1, y: 2 (orientation: vertical)
-- Switch on top: x: 2, y: 1 (orientation: horizontal)
-- Resistor on right: x: 3, y: 2 (orientation: vertical)
-- Ammeter on bottom: x: 2, y: 3 (orientation: horizontal)
-Wire Paths to connect them in a loop:
-- bat to sw: path: [ {"x": 1, "y": 2}, {"x": 1, "y": 1}, {"x": 2, "y": 1} ]
-- sw to res: path: [ {"x": 2, "y": 1}, {"x": 3, "y": 1}, {"x": 3, "y": 2} ]
-- res to ammeter: path: [ {"x": 3, "y": 2}, {"x": 3, "y": 3}, {"x": 2, "y": 3} ]
-- ammeter to bat: path: [ {"x": 2, "y": 3}, {"x": 1, "y": 3}, {"x": 1, "y": 2} ]
-This will create a beautiful, perfectly connected rectangular circuit.
-Always aim for rectangular loops and orthogonal paths!`;
+EXAMPLE SPACIOUS LOOP LAYOUT (Very Important):
+To make the circuit visually clear, you MUST space components out widely. Create a large, spacious rectangular loop. Do NOT cluster components tightly together.
+- Battery on the far left: x: 1, y: 3 (orientation: vertical)
+- Top wire goes from x: 1, y: 1 to x: 5, y: 1
+- Resistor 1 on the top branch: x: 3, y: 1 (orientation: horizontal)
+- Resistor 2 on the far right: x: 5, y: 3 (orientation: vertical)
+- Bottom wire goes from x: 5, y: 5 to x: 1, y: 5
+- Ammeter on the bottom branch: x: 3, y: 5 (orientation: horizontal)
+
+If there is a voltmeter in parallel across Resistor 2, place it further out:
+- Voltmeter: x: 6, y: 3 (orientation: vertical)
+- Voltmeter wires: Connect from x:5,y:2 to x:6,y:2 to Voltmeter, and from Voltmeter to x:6,y:4 to x:5,y:4.
+
+Always aim for large, beautifully spaced rectangular loops (e.g. using coordinates 1 through 6) and perfect orthogonal paths!`;
 
 export async function POST(req: Request) {
   try {
