@@ -51,8 +51,9 @@ CRITICAL RULES:
 1. Ensure all wire paths are orthogonal (x or y must remain constant between sequential points).
 2. The \`updateFunctionBody\` MUST be valid Javascript.
 3. If total resistance is 0 (short circuit), set the current to a very high value like 999 instead of 0!
-3. Components on the LEFT or RIGHT vertical branches MUST have \`"orientation": "vertical"\`.
-4. Components on the TOP or BOTTOM horizontal branches MUST have \`"orientation": "horizontal"\`.
+4. Components on the LEFT or RIGHT vertical branches MUST have \`"orientation": "vertical"\`.
+5. Components on the TOP or BOTTOM horizontal branches MUST have \`"orientation": "horizontal"\`.
+6. NEVER route a wire directly into the side of a vertical component! For a parallel Voltmeter, its wires MUST connect to the nodes perfectly ABOVE and BELOW the resistor being measured (e.g., if Resistor is at x:5, y:3, the Voltmeter wires must connect to x:5, y:2 and x:5, y:4).
 
 EXAMPLE SPACIOUS TALL LOOP LAYOUT:
 If the user uploads a tall circuit with 2 resistors on the right branch and a voltmeter across one of them:

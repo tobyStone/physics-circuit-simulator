@@ -68,12 +68,15 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
           if (isNaN(cx) || cx > 20 || cx < 0) cx = [1, 3, 5, 3][index % 4];
           if (isNaN(cy) || cy > 20 || cy < 0) cy = [3, 1, 3, 5][index % 4];
 
+          let compValue = Number(c.value) || 0;
+          let calculatedMax = Math.max(compValue * 2, 100);
+
           return {
             ...c,
             id: c.id || `gen-comp-${index}`,
             type: c.type || 'Resistor',
             name: c.name || `Component ${index}`,
-            value: Number(c.value) || 0,
+            value: compValue,
             current: Number(c.current) || 0,
             voltageDrop: Number(c.voltageDrop) || 0,
             metadata: {
@@ -82,6 +85,9 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
               y: cy,
               orientation: orientation,
               adjustable: !!(c.metadata?.adjustable ?? c.adjustable),
+              max: calculatedMax,
+              min: 0,
+              step: compValue > 1000 ? 100 : (compValue > 100 ? 10 : 1)
             }
           };
         });
