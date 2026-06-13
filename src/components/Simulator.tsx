@@ -124,20 +124,7 @@ export default function Simulator() {
           ))}
         </div>
 
-        <button 
-          onClick={() => {
-            const initial = circuits.find(c => c.id === activeCircuit.id)!;
-            setComponents(initial.components || []);
-            try {
-               setComponents(activeCircuit.update(initial.components) || initial.components);
-            } catch (e) {
-               setComponents(initial.components);
-            }
-          }}
-          className="flex items-center justify-center gap-2 w-full py-3 mt-auto bg-surface-hover hover:bg-surface border border-border rounded-lg text-sm text-text-muted hover:text-text transition-all"
-        >
-          <RotateCcw size={16} /> Reset Circuit
-        </button>
+
       </div>
 
       {/* Main Canvas Area */}

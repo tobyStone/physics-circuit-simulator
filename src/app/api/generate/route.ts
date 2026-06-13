@@ -50,6 +50,7 @@ You must return ONLY a raw JSON object with no markdown formatting. The JSON mus
 CRITICAL RULES:
 1. Ensure all wire paths are orthogonal (x or y must remain constant between sequential points).
 2. The \`updateFunctionBody\` MUST be valid Javascript.
+3. If total resistance is 0 (short circuit), set the current to a very high value like 999 instead of 0!
 3. Components on the LEFT or RIGHT vertical branches MUST have \`"orientation": "vertical"\`.
 4. Components on the TOP or BOTTOM horizontal branches MUST have \`"orientation": "horizontal"\`.
 
