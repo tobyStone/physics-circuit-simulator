@@ -40,7 +40,21 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
 
           // Find current for animation speed
           const sourceComponent = components.find(c => c.id === wire.currentSourceId);
-          const current = sourceComponent ? Math.abs(sourceComponent.current) : 0;
+          const fromComponent = components.find(c => c.id === wire.from);
+          const toComponent = components.find(c => c.id === wire.to);
+          
+          let current = sourceComponent ? Math.abs(sourceComponent.current) : 0;
+          
+          const isVoltmeterWire = fromComponent?.type === 'Voltmeter' || toComponent?.type === 'Voltmeter';
+          if (isVoltmeterWire) {
+              current = 0; // Ideal voltmeters have infinite resistance, no current
+          } else if (current === 0 && components.length > 0) {
+              // Fallback: If AI forgot to update the battery current, use the max current of any main component
+              const mainCurrents = components.filter(c => c.type !== 'Voltmeter').map(c => Math.abs(c.current));
+              if (mainCurrents.length > 0) {
+                  current = Math.max(...mainCurrents);
+              }
+          }
           
           // Base wire color
           const baseColor = "rgba(255, 255, 255, 0.2)";
