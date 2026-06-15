@@ -69,7 +69,7 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
           if (isNaN(cy) || cy > 20 || cy < 0) cy = [3, 1, 3, 5][index % 4];
 
           let compValue = Number(c.value) || 0;
-          let calculatedMax = Math.max(compValue * 2, 100);
+          let calculatedMax = c.type === 'Battery' ? compValue : Math.max(compValue * 2, 10);
 
           return {
             ...c,
