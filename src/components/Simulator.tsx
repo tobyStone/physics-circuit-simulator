@@ -135,8 +135,11 @@ export default function Simulator() {
            <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[120px] pointer-events-auto">
               <span className="text-xs text-text-muted uppercase tracking-wider mb-1">Max Current</span>
               <span className="text-2xl font-mono text-accent font-bold">
-                {safeComponents.length > 0 ? Math.max(...safeComponents.map(c => c.current)).toFixed(3) : "0.000"}
-                <span className="text-sm text-accent/70 ml-1">A</span>
+                {safeComponents.length > 0 ? (
+                   Math.max(...safeComponents.map(c => c.current)) > 900 
+                     ? <span className="text-[16px] text-red-500">SHORT CIRCUIT</span> 
+                     : <>{Math.max(...safeComponents.map(c => c.current)).toFixed(3)}<span className="text-sm text-accent/70 ml-1">A</span></>
+                ) : "0.000A"}
               </span>
            </div>
         </div>

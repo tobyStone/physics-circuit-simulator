@@ -14,6 +14,7 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
   const offsetY = 150;
 
   const formatCurrent = (current: number) => {
+    if (current > 900) return 'SHORT';
     if (Math.abs(current) < 0.0001) return '0.000A';
     if (Math.abs(current) < 0.1) {
       const str4 = current.toFixed(4);
@@ -118,7 +119,7 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
             </div>
             <ComponentRenderer component={c} />
             <div className={`absolute z-20 ${isVertical ? 'left-full bottom-0 ml-3' : 'top-full mt-3'} px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border`}>
-              {c.voltageDrop.toFixed(2)}V | {formatCurrent(c.current)}
+              {c.type === 'Battery' ? c.value.toFixed(2) : c.voltageDrop.toFixed(2)}V | {formatCurrent(c.current)}
             </div>
           </motion.div>
         );
