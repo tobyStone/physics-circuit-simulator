@@ -70,6 +70,9 @@ Wire Paths:
 - voltmeter top wire: from res1/res2 junction to voltmeter: path: [ {"x": 5, "y": 3}, {"x": 6, "y": 3}, {"x": 6, "y": 4} ]
 - voltmeter bottom wire: from voltmeter to res2 bottom: path: [ {"x": 6, "y": 4}, {"x": 6, "y": 5}, {"x": 5, "y": 5} ]
 
+EXAMPLE updateFunctionBody:
+"const bat = components.find(c => c.type === 'Battery'); const r1 = components.find(c => c.id === 'res1'); const r2 = components.find(c => c.id === 'res2'); const vol = components.find(c => c.type === 'Voltmeter'); if(bat && r1 && r2) { const rTotal = r1.value + r2.value; const i = rTotal === 0 ? 999 : bat.value / rTotal; bat.current = i; r1.current = i; r2.current = i; r1.voltageDrop = i * r1.value; r2.voltageDrop = i * r2.value; if(vol) { vol.voltageDrop = r2.voltageDrop; vol.current = 0; } }"
+
 Always make the circuit tall and spacious. Set orientations strictly based on the branch the component is on!`;
 
 export async function POST(req: Request) {
