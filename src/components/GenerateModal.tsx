@@ -258,7 +258,13 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
         onGenerated(data as CircuitModel);
         onClose();
       } catch (err: any) {
-        setError(err.message || 'An unexpected error occurred.');
+        let msg = err.message || 'An unexpected error occurred.';
+        if (msg.includes('429 Too Many Requests') || msg.includes('Quota exceeded')) {
+           msg = "The AI service is currently receiving too many requests. Please wait 60 seconds and try again.";
+        } else if (msg.length > 200) {
+           msg = "The AI encountered an error processing your image. Please try a different diagram.";
+        }
+        setError(msg);
       } finally {
         setIsUploading(false);
       }
