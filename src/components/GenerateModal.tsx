@@ -92,14 +92,12 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
           };
         });
 
-        if (!Array.isArray(data.wirePaths)) {
-           data.wirePaths = [];
-        }
+        let processedWires = Array.isArray(data.wires) ? data.wires : (Array.isArray(data.wirePaths) ? data.wirePaths : []);
 
         // 1. Auto-close open loops (AI frequently forgets the return wire to the battery)
         const connections: Record<string, number> = {};
         data.components.forEach((c: any) => connections[c.id] = 0);
-        data.wirePaths.forEach((w: any) => {
+        processedWires.forEach((w: any) => {
             if (connections[w.from] !== undefined) connections[w.from]++;
             if (connections[w.to] !== undefined) connections[w.to]++;
         });
@@ -107,7 +105,7 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
         // Find main components (ignore voltmeters as they are parallel) that only have 1 wire connected
         const endpoints = data.components.filter((c: any) => c.type !== 'Voltmeter' && connections[c.id] === 1);
         if (endpoints.length === 2) {
-            data.wirePaths.push({
+            processedWires.push({
                 from: endpoints[0].id,
                 to: endpoints[1].id,
                 currentSourceId: data.components.find((c: any) => c.type === 'Battery')?.id || endpoints[0].id
@@ -115,7 +113,7 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
         }
 
         // 2. Smart Orientation-Aware Auto-Routing
-        data.wirePaths = data.wirePaths.map((wire: any) => {
+        processedWires = processedWires.map((wire: any) => {
           const fromComp = data.components.find((c: any) => c.id === wire.from);
           const toComp = data.components.find((c: any) => c.id === wire.to);
           
