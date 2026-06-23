@@ -134,11 +134,19 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
             }}
             onClick={() => onComponentClick && onComponentClick(c.id)}
           >
-            <div className={`absolute z-20 ${isVertical ? 'left-full top-0 ml-3' : 'bottom-full mb-3'} text-xs font-bold text-text bg-background/80 px-2 py-1 rounded border border-border/30 shadow-lg whitespace-nowrap`}>
+            <div className={`absolute z-20 ${
+              c.metadata?.labelPos === 'left' ? 'right-full top-0 mr-3' :
+              c.metadata?.labelPos === 'bottom' ? 'top-full mt-3' :
+              isVertical ? 'left-full top-0 ml-3' : 'bottom-full mb-3'
+            } text-xs font-bold text-text bg-background/80 px-2 py-1 rounded border border-border/30 shadow-lg whitespace-nowrap`}>
               {c.name}
             </div>
             <ComponentRenderer component={c} />
-            <div className={`absolute z-20 ${isVertical ? 'left-full bottom-0 ml-3' : 'top-full mt-3'} px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border`}>
+            <div className={`absolute z-20 ${
+              c.metadata?.labelPos === 'left' ? 'right-full bottom-0 mr-3' :
+              c.metadata?.labelPos === 'top' ? 'bottom-full mb-3' :
+              isVertical ? 'left-full bottom-0 ml-3' : 'top-full mt-3'
+            } px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border`}>
               {c.type === 'Battery' ? c.value.toFixed(2) : c.voltageDrop.toFixed(2)}V | {formatCurrent(c.current)}
             </div>
           </motion.div>

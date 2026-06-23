@@ -13,10 +13,10 @@ export const seriesParallelComparison: CircuitModel = {
     
     { id: 'am_p1', type: 'Ammeter', name: 'Branch 1 Ammeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 7, y: 2, orientation: 'vertical' } },
     { id: 'res_p1', type: 'Resistor', name: 'Parallel Resistor 1', value: 10, current: 0, voltageDrop: 0, metadata: { x: 7, y: 4, orientation: 'vertical', adjustable: true, min: 1, max: 50, step: 1, unit: 'Ω' } },
-    { id: 'vol_p1', type: 'Voltmeter', name: 'Branch 1 Voltmeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 6, y: 4, orientation: 'vertical' } },
+    { id: 'vol_p1', type: 'Voltmeter', name: 'Branch 1 Voltmeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 6, y: 4, orientation: 'vertical', labelPos: 'left' } },
     
     { id: 'am_p2', type: 'Ammeter', name: 'Branch 2 Ammeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 9, y: 2, orientation: 'vertical' } },
-    { id: 'res_p2', type: 'Resistor', name: 'Parallel Resistor 2', value: 10, current: 0, voltageDrop: 0, metadata: { x: 9, y: 4, orientation: 'vertical', adjustable: true, min: 1, max: 50, step: 1, unit: 'Ω' } },
+    { id: 'res_p2', type: 'Resistor', name: 'Parallel Resistor 2', value: 10, current: 0, voltageDrop: 0, metadata: { x: 9, y: 4, orientation: 'vertical', adjustable: true, min: 1, max: 50, step: 1, unit: 'Ω', labelPos: 'left' } },
     { id: 'vol_p2', type: 'Voltmeter', name: 'Branch 2 Voltmeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 10, y: 4, orientation: 'vertical' } },
   ],
   wirePaths: [
