@@ -250,12 +250,17 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
           return { ...wire, path };
         });
 
-        // We need to attach the actual executable JS function
-        // WARNING: Using new Function is risky if this was a multi-user app.
-        // For a teacher tool parsing AI json, it is acceptable.
-        data.update = new Function('components', (data.updateFunctionBody || '') + '\nreturn components;');
+        const newCircuit: CircuitModel = {
+          id: `generated-${Date.now()}`,
+          name: "Generated Circuit",
+          description: "A circuit generated from your uploaded diagram.",
+          components: data.components,
+          wirePaths: data.wires,
+          updateFunctionBody: data.updateFunctionBody,
+          update: new Function('components', (data.updateFunctionBody || '') + '\nreturn components;') as any,
+        };
 
-        onGenerated(data as CircuitModel);
+        onGenerated(newCircuit);
         onClose();
       } catch (err: any) {
         let msg = err.message || 'An unexpected error occurred.';

@@ -20,4 +20,5 @@ export interface CircuitModel {
   // The update function takes the current state of components (like if a switch was toggled or slider moved)
   // and recalculates current and voltage drops.
   update: (components: CircuitComponent[]) => CircuitComponent[];
+  updateFunctionBody?: string;
 }

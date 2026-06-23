@@ -9,11 +9,31 @@ import CircuitCanvas from "./CircuitCanvas";
 import GenerateModal from "./GenerateModal";
 
 export default function Simulator() {
-  const circuits = getCircuitList();
+  const [circuits, setCircuits] = useState<CircuitModel[]>(getCircuitList());
   const [activeCircuit, setActiveCircuit] = useState<CircuitModel>(circuits[0]);
   const [components, setComponents] = useState<CircuitComponent[]>(circuits[0].components);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+
+  // Load custom circuits from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('voltlab_custom_circuits');
+      if (saved) {
+        const parsed = JSON.parse(saved) as CircuitModel[];
+        const rehydrated = parsed.map(c => ({
+          ...c,
+          update: new Function('components', (c.updateFunctionBody || '') + '\nreturn components;') as any
+        }));
+        setCircuits(prev => {
+          const defaults = prev.filter(p => !p.id.startsWith('generated-'));
+          return [...defaults, ...rehydrated];
+        });
+      }
+    } catch (e) {
+      console.error("Failed to load custom circuits", e);
+    }
+  }, []);
 
   // Initialize and run simulation on mount or circuit change
   useEffect(() => {
@@ -200,10 +220,35 @@ export default function Simulator() {
         isOpen={isGenerateModalOpen} 
         onClose={() => setIsGenerateModalOpen(false)} 
         onGenerated={(generatedCircuit) => {
-          // We add it to our active circuit list conceptually, or just set it as active
+          setCircuits(prev => {
+            const customCircuits = prev.filter(c => c.id.startsWith('generated-'));
+            const defaults = prev.filter(c => !c.id.startsWith('generated-'));
+            
+            generatedCircuit.name = `Custom Circuit ${customCircuits.length + 1}`;
+            
+            let newCustoms = [...customCircuits, generatedCircuit];
+            if (newCustoms.length > 3) {
+              newCustoms.shift(); // Keep only last 3
+              // Rename sequentially
+              newCustoms.forEach((c, i) => c.name = `Custom Circuit ${i + 1}`);
+            }
+            
+            // Save to local storage
+            try {
+               const toSave = newCustoms.map(c => {
+                 const { update, ...rest } = c; // exclude function
+                 return rest;
+               });
+               localStorage.setItem('voltlab_custom_circuits', JSON.stringify(toSave));
+            } catch (e) {
+               console.error("Failed to save to localStorage", e);
+            }
+            
+            return [...defaults, ...newCustoms];
+          });
+
           setActiveCircuit(generatedCircuit);
           setComponents(generatedCircuit.components || []);
-          // Initial simulation run for generated circuit
           try {
             setComponents(generatedCircuit.update(generatedCircuit.components) || generatedCircuit.components || []);
           } catch (e) {
