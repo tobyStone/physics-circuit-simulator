@@ -255,7 +255,7 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
           name: "Generated Circuit",
           description: "A circuit generated from your uploaded diagram.",
           components: data.components,
-          wirePaths: data.wires,
+          wirePaths: processedWires,
           updateFunctionBody: data.updateFunctionBody,
           update: new Function('components', (data.updateFunctionBody || '') + '\nreturn components;') as any,
         };
