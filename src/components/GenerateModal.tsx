@@ -114,8 +114,22 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
 
         // 2. Smart Orientation-Aware Auto-Routing
         processedWires = processedWires.map((wire: any) => {
-          const fromComp = data.components.find((c: any) => c.id === wire.from);
-          const toComp = data.components.find((c: any) => c.id === wire.to);
+          // Fuzzy matcher to correct AI typos in from/to IDs
+          const findComp = (id: string) => {
+             if (!id) return null;
+             let c = data.components.find((c: any) => c.id === id);
+             if (c) return c;
+             // Try fuzzy match
+             const lowerId = id.toLowerCase();
+             return data.components.find((c: any) => 
+               c.id.toLowerCase() === lowerId || 
+               (c.name && c.name.toLowerCase().includes(lowerId)) || 
+               lowerId.includes(c.name?.toLowerCase() || '')
+             );
+          };
+
+          const fromComp = findComp(wire.from);
+          const toComp = findComp(wire.to);
           
           let path = [];
           if (fromComp && toComp) {
@@ -130,7 +144,17 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
                  y: Number(pt.y) || 0
              })) : [];
              
-             const isValidAiPath = aiPath.length >= 2 && aiPath.every((pt: any) => pt.x <= 20 && pt.y <= 20 && pt.x >= 0 && pt.y >= 0);
+             let isValidAiPath = aiPath.length >= 2 && aiPath.every((pt: any) => pt.x <= 20 && pt.y <= 20 && pt.x >= 0 && pt.y >= 0);
+
+             // FAILSAFE: If a Voltmeter's wire spans more than 5 units horizontally, it's a hallucination.
+             // We must intercept and force a U-shape.
+             if (isValidAiPath && (fromComp.type === 'Voltmeter' || toComp.type === 'Voltmeter')) {
+                 const minX = Math.min(...aiPath.map((p: any) => p.x));
+                 const maxX = Math.max(...aiPath.map((p: any) => p.x));
+                 if (maxX - minX > 5) {
+                     isValidAiPath = false; // Force fallback router
+                 }
+             }
 
              if (isValidAiPath) {
                  // Trust AI's routing to allow tall loops and custom corners.

@@ -9,9 +9,9 @@ interface CircuitCanvasProps {
 
 export default function CircuitCanvas({ circuit, components, onComponentClick }: CircuitCanvasProps) {
   // Grid settings
-  const gridSize = 150;
-  const offsetX = 200;
-  const offsetY = 150;
+  const gridSize = 100;
+  const offsetX = 100;
+  const offsetY = 100;
 
   const formatCurrent = (current: number) => {
     if (current > 900) return 'SHORT';
@@ -38,6 +38,25 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
             const y = pt.y * gridSize + offsetY;
             return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
           }).join(' ');
+
+          // Heuristic to force clockwise electron flow in rectangular circuits
+          const startPt = wire.path[0];
+          const endPt = wire.path[wire.path.length - 1];
+          const dx = endPt.x - startPt.x;
+          const dy = endPt.y - startPt.y;
+          const midX = (startPt.x + endPt.x) / 2;
+          const midY = (startPt.y + endPt.y) / 2;
+          
+          let isReversed = false;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            // Horizontal wire
+            if (midY < 10 && dx < 0) isReversed = true; // Top wire should flow right
+            if (midY >= 10 && dx > 0) isReversed = true; // Bottom wire should flow left
+          } else {
+            // Vertical wire
+            if (midX >= 10 && dy < 0) isReversed = true; // Right wire should flow down
+            if (midX < 10 && dy > 0) isReversed = true; // Left wire should flow up
+          }
 
           // Find current for animation speed
           const sourceComponent = components.find(c => c.id === wire.currentSourceId);
@@ -85,7 +104,8 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
                   strokeDasharray="10 15"
                   className="electron-flow"
                   style={{
-                    animationDuration: `${Math.min(2, Math.max(0.2, 0.15 / Math.sqrt(current)))}s`
+                    animationDuration: `${Math.min(2, Math.max(0.2, 0.15 / Math.sqrt(current)))}s`,
+                    animationDirection: isReversed ? 'reverse' : 'normal'
                   }}
                 />
               )}
