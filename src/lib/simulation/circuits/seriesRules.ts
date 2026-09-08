@@ -7,9 +7,9 @@ export const seriesRulesCircuit: CircuitModel = {
   sqaNotes: 'In a series circuit:\n1. The current is the SAME everywhere! Look at the three ammeters.\n2. The supply voltage is SHARED among components (V_total = V_1 + V_2).\nUse the sliders to change resistance and watch how the voltage distributes proportionally.',
   components: [
     { id: 'bat1', type: 'Battery', name: 'Power Supply', value: 24, current: 0, voltageDrop: 24, metadata: { x: 3, y: 3, orientation: 'vertical', adjustable: true, min: 0, max: 48, step: 1, unit: 'V' } },
-    { id: 'vol_tot', type: 'Voltmeter', name: 'Total Supply Voltmeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 2, y: 3, orientation: 'vertical', labelPos: 'left' } },
+    { id: 'vol_tot', type: 'Voltmeter', name: 'Total Supply Voltmeter', value: 0, current: 0, voltageDrop: 24, metadata: { x: 2, y: 3, orientation: 'vertical', labelPos: 'left' } },
     
-    { id: 'sw1', type: 'Switch', name: 'Main Switch', value: 1, current: 0, voltageDrop: 0, metadata: { x: 4, y: 1, orientation: 'horizontal' } },
+    { id: 'sw1', type: 'Switch', name: 'Main Switch', value: 0, current: 0, voltageDrop: 24, metadata: { x: 4, y: 1, orientation: 'horizontal' } },
     
     { id: 'am1', type: 'Ammeter', name: 'Ammeter 1', value: 0, current: 0, voltageDrop: 0, metadata: { x: 6, y: 1, orientation: 'horizontal', labelPos: 'top' } },
     { id: 'res1', type: 'Resistor', name: 'Resistor 1', value: 8, current: 0, voltageDrop: 0, metadata: { x: 8, y: 1, orientation: 'horizontal', adjustable: true, min: 1, max: 50, step: 1, unit: 'Ω', labelPos: 'bottom' } },

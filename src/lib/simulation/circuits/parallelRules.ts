@@ -7,13 +7,13 @@ export const parallelRulesCircuit: CircuitModel = {
   sqaNotes: 'In a parallel circuit:\n1. The voltage is the SAME across all branches (V_supply = V_1 = V_2). Look at the three voltmeters!\n2. The current SPLITS between the branches (I_total = I_1 + I_2).\nChange the resistors to see the total current change while the voltage remains perfectly constant.',
   components: [
     { id: 'bat1', type: 'Battery', name: 'Power Supply', value: 24, current: 0, voltageDrop: 24, metadata: { x: 3, y: 3, orientation: 'vertical', adjustable: true, min: 0, max: 48, step: 1, unit: 'V' } },
-    { id: 'vol_tot', type: 'Voltmeter', name: 'Total Voltmeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 2, y: 3, orientation: 'vertical', labelPos: 'left' } },
+    { id: 'vol_tot', type: 'Voltmeter', name: 'Total Voltmeter', value: 0, current: 0, voltageDrop: 24, metadata: { x: 2, y: 3, orientation: 'vertical', labelPos: 'left' } },
     
-    { id: 'sw1', type: 'Switch', name: 'Main Switch', value: 1, current: 0, voltageDrop: 0, metadata: { x: 5, y: 1, orientation: 'horizontal' } },
+    { id: 'sw1', type: 'Switch', name: 'Main Switch', value: 0, current: 0, voltageDrop: 24, metadata: { x: 5, y: 1, orientation: 'horizontal' } },
     { id: 'am_tot', type: 'Ammeter', name: 'Total Ammeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 7, y: 1, orientation: 'horizontal', labelPos: 'top' } },
     
     { id: 'am1', type: 'Ammeter', name: 'Branch 1 Ammeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 10, y: 2, orientation: 'vertical' } },
-    { id: 'res1', type: 'Resistor', name: 'Branch 1 Resistor', value: 12, current: 0, voltageDrop: 0, metadata: { x: 10, y: 4, orientation: 'vertical', adjustable: true, min: 1, max: 50, step: 1, unit: 'Ω', labelPos: 'left' } },
+    { id: 'res1', type: 'Resistor', name: 'Branch 1 Resistor', value: 12, current: 0, voltageDrop: 0, metadata: { x: 10, y: 4, orientation: 'vertical', adjustable: true, min: 1, max: 50, step: 1, unit: 'Ω' } },
     { id: 'vol1', type: 'Voltmeter', name: 'Branch 1 Voltmeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 9, y: 4, orientation: 'vertical', labelPos: 'left' } },
     
     { id: 'am2', type: 'Ammeter', name: 'Branch 2 Ammeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 13, y: 2, orientation: 'vertical' } },
