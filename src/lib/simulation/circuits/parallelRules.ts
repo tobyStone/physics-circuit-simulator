@@ -9,7 +9,7 @@ export const parallelRulesCircuit: CircuitModel = {
     { id: 'bat1', type: 'Battery', name: 'Power Supply', value: 24, current: 0, voltageDrop: 24, metadata: { x: 3, y: 3, orientation: 'vertical', adjustable: true, min: 0, max: 48, step: 1, unit: 'V' } },
     { id: 'vol_tot', type: 'Voltmeter', name: 'Total Voltmeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 2, y: 3, orientation: 'vertical', labelPos: 'left' } },
     
-    { id: 'sw1', type: 'Switch', name: 'Main Switch', state: 'closed', value: 0, current: 0, voltageDrop: 0, metadata: { x: 5, y: 1, orientation: 'horizontal' } },
+    { id: 'sw1', type: 'Switch', name: 'Main Switch', value: 1, current: 0, voltageDrop: 0, metadata: { x: 5, y: 1, orientation: 'horizontal' } },
     { id: 'am_tot', type: 'Ammeter', name: 'Total Ammeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 7, y: 1, orientation: 'horizontal', labelPos: 'top' } },
     
     { id: 'am1', type: 'Ammeter', name: 'Branch 1 Ammeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 10, y: 2, orientation: 'vertical' } },
@@ -49,7 +49,7 @@ export const parallelRulesCircuit: CircuitModel = {
     const r1 = components.find(c => c.id === 'res1')!;
     const r2 = components.find(c => c.id === 'res2')!;
 
-    const isClosed = sw.state === 'closed';
+    const isClosed = sw.value === 1;
 
     // Parallel resistance: 1/Rp = 1/R1 + 1/R2
     const rp = (r1.value * r2.value) / (r1.value + r2.value);

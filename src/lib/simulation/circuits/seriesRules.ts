@@ -9,7 +9,7 @@ export const seriesRulesCircuit: CircuitModel = {
     { id: 'bat1', type: 'Battery', name: 'Power Supply', value: 24, current: 0, voltageDrop: 24, metadata: { x: 3, y: 3, orientation: 'vertical', adjustable: true, min: 0, max: 48, step: 1, unit: 'V' } },
     { id: 'vol_tot', type: 'Voltmeter', name: 'Total Supply Voltmeter', value: 0, current: 0, voltageDrop: 0, metadata: { x: 2, y: 3, orientation: 'vertical', labelPos: 'left' } },
     
-    { id: 'sw1', type: 'Switch', name: 'Main Switch', state: 'closed', value: 0, current: 0, voltageDrop: 0, metadata: { x: 4, y: 1, orientation: 'horizontal' } },
+    { id: 'sw1', type: 'Switch', name: 'Main Switch', value: 1, current: 0, voltageDrop: 0, metadata: { x: 4, y: 1, orientation: 'horizontal' } },
     
     { id: 'am1', type: 'Ammeter', name: 'Ammeter 1', value: 0, current: 0, voltageDrop: 0, metadata: { x: 6, y: 1, orientation: 'horizontal', labelPos: 'top' } },
     { id: 'res1', type: 'Resistor', name: 'Resistor 1', value: 8, current: 0, voltageDrop: 0, metadata: { x: 8, y: 1, orientation: 'horizontal', adjustable: true, min: 1, max: 50, step: 1, unit: 'Ω', labelPos: 'bottom' } },
@@ -50,7 +50,7 @@ export const seriesRulesCircuit: CircuitModel = {
     const r1 = components.find(c => c.id === 'res1')!;
     const r2 = components.find(c => c.id === 'res2')!;
 
-    const isClosed = sw.state === 'closed';
+    const isClosed = sw.value === 1;
     const rTotal = r1.value + r2.value;
     const current = isClosed ? bat.value / rTotal : 0;
     
