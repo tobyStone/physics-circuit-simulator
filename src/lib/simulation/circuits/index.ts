@@ -4,6 +4,7 @@ import { simpleParallelCircuit } from './parallelCircuit';
 import { ohmsLawSeriesCircuit } from './ohmsLawSeries';
 import { seriesParallelComparison } from './seriesParallelComparison';
 import { seriesRulesCircuit } from './seriesRules';
+import { parallelRulesCircuit } from './parallelRules';
 import { CircuitModel } from '../types';
 
 export const predefinedCircuits: Record<string, CircuitModel> = {
@@ -13,6 +14,7 @@ export const predefinedCircuits: Record<string, CircuitModel> = {
   [ohmsLawSeriesCircuit.id]: ohmsLawSeriesCircuit,
   [seriesParallelComparison.id]: seriesParallelComparison,
   [seriesRulesCircuit.id]: seriesRulesCircuit,
+  [parallelRulesCircuit.id]: parallelRulesCircuit,
 };
 
 export const getCircuitList = () => Object.values(predefinedCircuits);
