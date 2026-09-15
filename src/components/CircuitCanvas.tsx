@@ -147,10 +147,14 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
               c.metadata?.labelPos === 'top' ? 'bottom-full mb-3' :
               isVertical ? 'left-full bottom-0 ml-3' : 'top-full mt-3'
             } px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border`}>
-              {circuit.metadata?.resistanceOnly || c.metadata?.resistanceOnly ? (
-                <span className="text-accent font-semibold">{c.type === 'Ohmmeter' ? `R_total = ${c.value.toFixed(2)} Ω` : `${c.value} Ω`}</span>
+              {c.type === 'Battery' ? (
+                `${c.value.toFixed(2)}V | ${formatCurrent(c.current)}`
+              ) : c.type === 'Switch' ? (
+                c.value === 1 ? 'CLOSED' : 'OPEN'
+              ) : circuit.metadata?.resistanceOnly || c.metadata?.resistanceOnly ? (
+                `${c.value} Ω | ${formatCurrent(c.current)}`
               ) : (
-                <>{c.type === 'Battery' ? c.value.toFixed(2) : c.voltageDrop.toFixed(2)}V | {formatCurrent(c.current)}</>
+                `${c.voltageDrop.toFixed(2)}V | ${formatCurrent(c.current)}`
               )}
             </div>
           </motion.div>

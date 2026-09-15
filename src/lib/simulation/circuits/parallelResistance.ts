@@ -1,9 +1,9 @@
-import { CircuitModel } from '../types';
+import { CircuitModel, CircuitComponent } from '../types';
 
 export const parallelResistanceCircuit: CircuitModel = {
   id: 'parallel-resistance-calc',
   name: 'Parallel Resistance (3 Resistors)',
-  description: 'Work out the total equivalent resistance of 3 resistors connected in parallel between terminals X and Y.',
+  description: 'Work out the total equivalent resistance of 3 resistors in parallel. Click the switch to turn on electricity and watch current split!',
   sqaNotes: `Finding Total Resistance in Parallel (3 Resistors):
 
 Formula:
@@ -17,20 +17,18 @@ R_T = 5 Ω
 Key SQA National 5 Rule:
 The total resistance of any parallel network is ALWAYS less than the smallest individual resistor (here, 5 Ω is less than 10 Ω)!
 
-Try moving any slider to see how increasing or decreasing individual resistors changes the overall resistance.`,
+Adjust any resistor slider to see the overall ohms update in the top-right card, then click the switch to turn on electricity!`,
   metadata: {
-    resistanceOnly: true
+    resistanceOnly: true,
+    calculateTotalResistance: (comps: CircuitComponent[]) => {
+      const r1 = comps.find(c => c.id === 'res1')?.value || 1;
+      const r2 = comps.find(c => c.id === 'res2')?.value || 1;
+      const r3 = comps.find(c => c.id === 'res3')?.value || 1;
+      const invTotal = (1 / r1) + (1 / r2) + (1 / r3);
+      return 1 / (invTotal || 1);
+    }
   },
   components: [
-    { 
-      id: 'r_total', 
-      type: 'Ohmmeter', 
-      name: 'Total Resistance (Ohmmeter)', 
-      value: 5, 
-      current: 0, 
-      voltageDrop: 0, 
-      metadata: { x: 6, y: 0, orientation: 'horizontal', labelPos: 'top', resistanceOnly: true } 
-    },
     { 
       id: 'res1', 
       type: 'Resistor', 
@@ -38,7 +36,7 @@ Try moving any slider to see how increasing or decreasing individual resistors c
       value: 20, 
       current: 0, 
       voltageDrop: 0, 
-      metadata: { x: 6, y: 2, orientation: 'horizontal', adjustable: true, min: 1, max: 100, step: 1, unit: 'Ω', labelPos: 'top', resistanceOnly: true } 
+      metadata: { x: 7, y: 2, orientation: 'horizontal', adjustable: true, min: 1, max: 100, step: 1, unit: 'Ω', labelPos: 'top', resistanceOnly: true } 
     },
     { 
       id: 'res2', 
@@ -47,7 +45,7 @@ Try moving any slider to see how increasing or decreasing individual resistors c
       value: 20, 
       current: 0, 
       voltageDrop: 0, 
-      metadata: { x: 6, y: 4, orientation: 'horizontal', adjustable: true, min: 1, max: 100, step: 1, unit: 'Ω', labelPos: 'top', resistanceOnly: true } 
+      metadata: { x: 7, y: 4, orientation: 'horizontal', adjustable: true, min: 1, max: 100, step: 1, unit: 'Ω', labelPos: 'top', resistanceOnly: true } 
     },
     { 
       id: 'res3', 
@@ -56,39 +54,80 @@ Try moving any slider to see how increasing or decreasing individual resistors c
       value: 10, 
       current: 0, 
       voltageDrop: 0, 
-      metadata: { x: 6, y: 6, orientation: 'horizontal', adjustable: true, min: 1, max: 100, step: 1, unit: 'Ω', labelPos: 'bottom', resistanceOnly: true } 
+      metadata: { x: 7, y: 6, orientation: 'horizontal', adjustable: true, min: 1, max: 100, step: 1, unit: 'Ω', labelPos: 'bottom', resistanceOnly: true } 
+    },
+    { 
+      id: 'bat1', 
+      type: 'Battery', 
+      name: 'Power Supply', 
+      value: 24, 
+      current: 0, 
+      voltageDrop: 24, 
+      metadata: { x: 5, y: 8, orientation: 'horizontal', adjustable: true, min: 0, max: 48, step: 1, unit: 'V', labelPos: 'bottom' } 
+    },
+    { 
+      id: 'sw1', 
+      type: 'Switch', 
+      name: 'Main Switch', 
+      value: 0, 
+      current: 0, 
+      voltageDrop: 24, 
+      metadata: { x: 9, y: 8, orientation: 'horizontal', labelPos: 'bottom' } 
     },
   ],
   wirePaths: [
-    // Ohmmeter connections
-    { from: 'r_total', to: 'res1', currentSourceId: 'r_total', path: [{ x: 6, y: 0 }, { x: 4, y: 0 }, { x: 4, y: 2 }, { x: 6, y: 2 }] },
-    { from: 'r_total', to: 'res1', currentSourceId: 'r_total', path: [{ x: 6, y: 0 }, { x: 8, y: 0 }, { x: 8, y: 2 }, { x: 6, y: 2 }] },
+    // Branch 1 (top)
+    { from: 'bat1', to: 'res1', currentSourceId: 'res1', path: [{ x: 4, y: 8 }, { x: 4, y: 2 }, { x: 7, y: 2 }] },
+    { from: 'res1', to: 'sw1', currentSourceId: 'res1', path: [{ x: 7, y: 2 }, { x: 10, y: 2 }, { x: 10, y: 8 }] },
     
-    // Left vertical rail connecting the 3 parallel branches
-    { from: 'res1', to: 'res2', currentSourceId: 'r_total', path: [{ x: 4, y: 2 }, { x: 4, y: 4 }, { x: 6, y: 4 }] },
-    { from: 'res2', to: 'res3', currentSourceId: 'r_total', path: [{ x: 4, y: 4 }, { x: 4, y: 6 }, { x: 6, y: 6 }] },
+    // Branch 2 (middle)
+    { from: 'bat1', to: 'res2', currentSourceId: 'res2', path: [{ x: 4, y: 4 }, { x: 7, y: 4 }] },
+    { from: 'res2', to: 'sw1', currentSourceId: 'res2', path: [{ x: 7, y: 4 }, { x: 10, y: 4 }] },
     
-    // Right vertical rail connecting the 3 parallel branches
-    { from: 'res1', to: 'res2', currentSourceId: 'r_total', path: [{ x: 8, y: 2 }, { x: 8, y: 4 }, { x: 6, y: 4 }] },
-    { from: 'res2', to: 'res3', currentSourceId: 'r_total', path: [{ x: 8, y: 4 }, { x: 8, y: 6 }, { x: 6, y: 6 }] },
+    // Branch 3 (bottom resistor)
+    { from: 'bat1', to: 'res3', currentSourceId: 'res3', path: [{ x: 4, y: 6 }, { x: 7, y: 6 }] },
+    { from: 'res3', to: 'sw1', currentSourceId: 'res3', path: [{ x: 7, y: 6 }, { x: 10, y: 6 }] },
+    
+    // Bottom power rail with Battery and Switch
+    { from: 'bat1', to: 'sw1', currentSourceId: 'bat1', path: [{ x: 5, y: 8 }, { x: 9, y: 8 }] },
+    { from: 'sw1', to: 'bat1', currentSourceId: 'bat1', path: [{ x: 9, y: 8 }, { x: 10, y: 8 }, { x: 10, y: 8 }] },
+    { from: 'bat1', to: 'bat1', currentSourceId: 'bat1', path: [{ x: 4, y: 8 }, { x: 5, y: 8 }] },
   ],
   update: (components) => {
     const r1 = components.find(c => c.id === 'res1')!;
     const r2 = components.find(c => c.id === 'res2')!;
     const r3 = components.find(c => c.id === 'res3')!;
+    const bat = components.find(c => c.id === 'bat1')!;
+    const sw = components.find(c => c.id === 'sw1')!;
+
+    const isClosed = sw.value === 1;
 
     // 1 / R_T = 1 / R1 + 1 / R2 + 1 / R3
-    const invTotal = (1 / (r1.value || 1)) + (1 / (r2.value || 1)) + (1 / (r3.value || 1));
-    const rTotal = 1 / invTotal;
+    const r1Val = r1.value || 1;
+    const r2Val = r2.value || 1;
+    const r3Val = r3.value || 1;
+    const invTotal = (1 / r1Val) + (1 / r2Val) + (1 / r3Val);
+    const rTotal = 1 / (invTotal || 1);
+
+    const iTotal = isClosed ? bat.value / rTotal : 0;
+    const vBranch = isClosed ? bat.value : 0;
+    
+    const i1 = isClosed ? vBranch / r1Val : 0;
+    const i2 = isClosed ? vBranch / r2Val : 0;
+    const i3 = isClosed ? vBranch / r3Val : 0;
 
     return components.map(c => {
       switch (c.id) {
-        case 'r_total':
-          return { ...c, value: rTotal, current: 0, voltageDrop: 0 };
+        case 'bat1':
+          return { ...c, current: iTotal, voltageDrop: bat.value };
+        case 'sw1':
+          return { ...c, current: iTotal, voltageDrop: isClosed ? 0 : bat.value };
         case 'res1':
+          return { ...c, current: i1, voltageDrop: vBranch };
         case 'res2':
+          return { ...c, current: i2, voltageDrop: vBranch };
         case 'res3':
-          return { ...c, current: 0, voltageDrop: 0 };
+          return { ...c, current: i3, voltageDrop: vBranch };
         default:
           return c;
       }

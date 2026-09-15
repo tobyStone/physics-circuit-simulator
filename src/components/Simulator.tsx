@@ -160,23 +160,23 @@ export default function Simulator() {
         
         {/* Readings Overlay (Fixed) */}
         <div className="absolute top-6 right-6 flex gap-4 z-20 pointer-events-none">
+           {activeCircuit.metadata?.calculateTotalResistance && (
+             <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[120px] pointer-events-auto">
+                <span className="text-xs text-text-muted uppercase tracking-wider mb-1">Total Resistance</span>
+                <span className="text-2xl font-mono text-accent font-bold">
+                  {activeCircuit.metadata.calculateTotalResistance(safeComponents).toFixed(2)}
+                  <span className="text-sm text-accent/70 ml-1">Ω</span>
+                </span>
+             </div>
+           )}
            <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[120px] pointer-events-auto">
-              <span className="text-xs text-text-muted uppercase tracking-wider mb-1">
-                {activeCircuit.metadata?.resistanceOnly ? "Total Resistance" : "Max Current"}
-              </span>
+              <span className="text-xs text-text-muted uppercase tracking-wider mb-1">Max Current</span>
               <span className="text-2xl font-mono text-accent font-bold">
-                {activeCircuit.metadata?.resistanceOnly ? (
-                  <>
-                    {(safeComponents.find(c => c.type === 'Ohmmeter')?.value ?? safeComponents.find(c => c.id === 'r_total')?.value ?? 0).toFixed(2)}
-                    <span className="text-sm text-accent/70 ml-1">Ω</span>
-                  </>
-                ) : (
-                  safeComponents.length > 0 ? (
-                     Math.max(...safeComponents.map(c => c.current)) > 900 
-                       ? <span className="text-[16px] text-red-500">SHORT CIRCUIT</span> 
-                       : <>{Math.max(...safeComponents.map(c => c.current)).toFixed(3)}<span className="text-sm text-accent/70 ml-1">A</span></>
-                  ) : "0.000A"
-                )}
+                {safeComponents.length > 0 ? (
+                   Math.max(...safeComponents.map(c => c.current)) > 900 
+                     ? <span className="text-[16px] text-red-500">SHORT CIRCUIT</span> 
+                     : <>{Math.max(...safeComponents.map(c => c.current)).toFixed(3)}<span className="text-sm text-accent/70 ml-1">A</span></>
+                ) : "0.000A"}
               </span>
            </div>
         </div>
