@@ -1,4 +1,4 @@
-export type ComponentType = 'Battery' | 'Resistor' | 'Switch' | 'LED' | 'Wire' | 'TransistorNPN' | 'Motor' | 'Ammeter' | 'Voltmeter';
+export type ComponentType = 'Battery' | 'Resistor' | 'Switch' | 'LED' | 'Wire' | 'TransistorNPN' | 'Motor' | 'Ammeter' | 'Voltmeter' | 'Ohmmeter';
 
 export interface CircuitComponent {
   id: string;
@@ -17,6 +17,7 @@ export interface CircuitModel {
   sqaNotes?: string;
   components: CircuitComponent[];
   wirePaths: { from: string; to: string; currentSourceId: string; path?: {x: number, y: number}[] }[];
+  metadata?: Record<string, any>;
   // The update function takes the current state of components (like if a switch was toggled or slider moved)
   // and recalculates current and voltage drops.
   update: (components: CircuitComponent[]) => CircuitComponent[];

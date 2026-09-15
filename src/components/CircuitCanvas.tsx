@@ -147,7 +147,11 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
               c.metadata?.labelPos === 'top' ? 'bottom-full mb-3' :
               isVertical ? 'left-full bottom-0 ml-3' : 'top-full mt-3'
             } px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border`}>
-              {c.type === 'Battery' ? c.value.toFixed(2) : c.voltageDrop.toFixed(2)}V | {formatCurrent(c.current)}
+              {circuit.metadata?.resistanceOnly || c.metadata?.resistanceOnly ? (
+                <span className="text-accent font-semibold">{c.type === 'Ohmmeter' ? `R_total = ${c.value.toFixed(2)} Ω` : `${c.value} Ω`}</span>
+              ) : (
+                <>{c.type === 'Battery' ? c.value.toFixed(2) : c.voltageDrop.toFixed(2)}V | {formatCurrent(c.current)}</>
+              )}
             </div>
           </motion.div>
         );
@@ -158,7 +162,7 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
 
 function ComponentRenderer({ component }: { component: CircuitComponent }) {
   const isVertical = component.metadata?.orientation === 'vertical';
-  const isActive = component.current > 0;
+  const isActive = component.current > 0 || component.type === 'Ohmmeter';
   let strokeColor = isActive ? "var(--color-accent)" : "rgba(255, 255, 255, 0.5)";
   let glow = isActive ? "drop-shadow(0 0 8px var(--color-accent-glow))" : "none";
   const bg = "var(--color-background)";
@@ -294,6 +298,17 @@ function ComponentRenderer({ component }: { component: CircuitComponent }) {
           <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
           <circle cx="30" cy="30" r="15" fill={bg} stroke={strokeColor} strokeWidth="2" />
           <text x="30" y="35" fontSize="16" fontFamily="sans-serif" fontWeight="bold" fill={strokeColor} textAnchor="middle">V</text>
+        </>
+      );
+      break;
+    case 'Ohmmeter':
+      svgContent = (
+        <>
+          <rect x="0" y="0" width="60" height="60" fill={bg} />
+          <line x1="0" y1="30" x2="15" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <circle cx="30" cy="30" r="15" fill={bg} stroke={strokeColor} strokeWidth="2" />
+          <text x="30" y="36" fontSize="16" fontFamily="sans-serif" fontWeight="bold" fill={strokeColor} textAnchor="middle">Ω</text>
         </>
       );
       break;
