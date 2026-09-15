@@ -21,7 +21,9 @@ export default function Simulator() {
       const saved = localStorage.getItem('voltlab_custom_circuits');
       if (saved) {
         const parsed = JSON.parse(saved) as CircuitModel[];
-        const rehydrated = parsed.map(c => ({
+        // Strictly cap custom circuits to a maximum of 3
+        const limited = parsed.slice(-3);
+        const rehydrated = limited.map(c => ({
           ...c,
           update: new Function('components', (c.updateFunctionBody || '') + '\nreturn components;') as any
         }));
@@ -105,12 +107,18 @@ export default function Simulator() {
             </button>
           )}
 
+          {/* ========================================================================= */}
+          {/* ZOMBIE CODE: Image-to-Circuit AI generation temporarily disabled.         */}
+          {/* Preserved here intact to be re-animated later under the safe parser plan. */}
+          {/* ========================================================================= */}
+          {/* 
           <button 
             onClick={() => setIsGenerateModalOpen(true)}
             className="mt-2 flex items-center justify-center gap-2 w-full py-2 bg-[#ff00e5]/10 hover:bg-[#ff00e5]/20 border border-[#ff00e5]/30 rounded-lg text-sm text-[#ff00e5] transition-all shadow-[0_0_10px_rgba(255,0,229,0.1)]"
           >
             <Camera size={16} /> Generate from Image
           </button>
+          */}
         </div>
 
         <div className="flex-grow flex flex-col gap-4 overflow-y-auto pr-2 mt-4 custom-scrollbar">
@@ -215,7 +223,10 @@ export default function Simulator() {
         </div>
       )}
 
-      {/* Generate Modal */}
+      {/* ========================================================================= */}
+      {/* ZOMBIE CODE: Generate Modal deactivated for now, preserved for reanimation */}
+      {/* ========================================================================= */}
+      {/* 
       <GenerateModal 
         isOpen={isGenerateModalOpen} 
         onClose={() => setIsGenerateModalOpen(false)} 
@@ -256,6 +267,7 @@ export default function Simulator() {
           }
         }} 
       />
+      */}
 
     </div>
   );
