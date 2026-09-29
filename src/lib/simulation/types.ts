@@ -1,4 +1,4 @@
-export type ComponentType = 'Battery' | 'Resistor' | 'Switch' | 'LED' | 'Wire' | 'TransistorNPN' | 'Motor' | 'Ammeter' | 'Voltmeter' | 'Ohmmeter';
+export type ComponentType = 'Battery' | 'Resistor' | 'Switch' | 'LED' | 'Wire' | 'TransistorNPN' | 'Motor' | 'Ammeter' | 'Voltmeter' | 'Ohmmeter' | 'Lamp';
 
 export interface CircuitComponent {
   id: string;

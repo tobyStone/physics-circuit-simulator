@@ -9,6 +9,7 @@ import { seriesRulesCircuit } from './seriesRules';
 import { parallelRulesCircuit } from './parallelRules';
 import { parallelResistanceCircuit } from './parallelResistance';
 import { mixedResistanceCircuit } from './mixedResistance';
+import { question5Circuit } from './question5';
 import { CircuitModel } from '../types';
 
 export const predefinedCircuits: Record<string, CircuitModel> = {
@@ -17,6 +18,7 @@ export const predefinedCircuits: Record<string, CircuitModel> = {
   [parallelRulesCircuit.id]: parallelRulesCircuit,
   [parallelResistanceCircuit.id]: parallelResistanceCircuit,
   [mixedResistanceCircuit.id]: mixedResistanceCircuit,
+  [question5Circuit.id]: question5Circuit,
 };
 
 export const getCircuitList = () => Object.values(predefinedCircuits);

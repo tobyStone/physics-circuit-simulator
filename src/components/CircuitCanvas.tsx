@@ -151,6 +151,12 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
                 `${c.value.toFixed(2)}V | ${formatCurrent(c.current)}`
               ) : c.type === 'Switch' ? (
                 c.value === 1 ? 'CLOSED' : 'OPEN'
+              ) : c.type === 'Lamp' ? (
+                c.current > 0 ? (
+                  <span className="text-amber-400 font-bold">LIT ({formatCurrent(c.current)})</span>
+                ) : (
+                  <span className="text-text-muted">UNLIT</span>
+                )
               ) : circuit.metadata?.resistanceOnly || c.metadata?.resistanceOnly ? (
                 `${c.value} Ω | ${formatCurrent(c.current)}`
               ) : (
@@ -313,6 +319,33 @@ function ComponentRenderer({ component }: { component: CircuitComponent }) {
           <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
           <circle cx="30" cy="30" r="15" fill={bg} stroke={strokeColor} strokeWidth="2" />
           <text x="30" y="36" fontSize="16" fontFamily="sans-serif" fontWeight="bold" fill={strokeColor} textAnchor="middle">Ω</text>
+        </>
+      );
+      break;
+    case 'Lamp':
+      const isLit = component.current > 0;
+      const lampColor = isLit ? "#ffbb00" : "rgba(255, 255, 255, 0.5)";
+      if (isLit) {
+        glow = `drop-shadow(0 0 16px rgba(255, 187, 0, 0.8))`;
+      }
+      svgContent = (
+        <>
+          <rect x="0" y="0" width="60" height="60" fill={bg} />
+          {/* Wire leads */}
+          <line x1="0" y1="30" x2="15" y2="30" stroke={strokeColor} strokeWidth="2" />
+          <line x1="45" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
+          {/* Bulb Circle */}
+          <circle 
+            cx="30" 
+            cy="30" 
+            r="15" 
+            fill={isLit ? "rgba(255, 187, 0, 0.2)" : bg} 
+            stroke={lampColor} 
+            strokeWidth="2" 
+          />
+          {/* Filament cross lines */}
+          <line x1="19.4" y1="19.4" x2="40.6" y2="40.6" stroke={lampColor} strokeWidth="2" />
+          <line x1="19.4" y1="40.6" x2="40.6" y2="19.4" stroke={lampColor} strokeWidth="2" />
         </>
       );
       break;
