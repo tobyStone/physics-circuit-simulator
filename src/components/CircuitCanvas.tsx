@@ -26,6 +26,8 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
     return current.toFixed(3) + 'A';
   };
 
+  const isWater = circuit.metadata?.isWater;
+
   return (
     <div className="relative min-w-[2000px] min-h-[1000px] w-full h-full z-0">
       <svg className="absolute inset-0 min-w-[2000px] min-h-[1000px] w-full h-full z-0 pointer-events-none">
@@ -77,17 +79,30 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
           }
           
           // Base wire color
-          const baseColor = "rgba(255, 255, 255, 0.2)";
-          const activeColor = "var(--color-accent)";
+          const isWater = circuit.metadata?.isWater;
+          const baseColor = isWater ? "#0d2847" : "rgba(255, 255, 255, 0.2)";
+          const activeColor = isWater ? "#00f0ff" : "var(--color-accent)";
           
           return (
             <g key={`wire-${idx}`}>
-              {/* Background Wire */}
+              {/* Background Pipe Casing in Water mode */}
+              {isWater && (
+                <path 
+                  d={pathD} 
+                  fill="none" 
+                  stroke="#16385c" 
+                  strokeWidth="10" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                />
+              )}
+
+              {/* Background Wire / Pipe Channel */}
               <path 
                 d={pathD} 
                 fill="none" 
-                stroke={baseColor} 
-                strokeWidth="2" 
+                stroke={isWater ? (current > 0 ? "#06223d" : "#051624") : baseColor} 
+                strokeWidth={isWater ? "6" : "2"} 
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -98,14 +113,15 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
                   d={pathD} 
                   fill="none" 
                   stroke={activeColor} 
-                  strokeWidth="2" 
+                  strokeWidth={isWater ? "4" : "2"} 
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeDasharray="10 15"
+                  strokeDasharray={isWater ? "10 14" : "10 15"}
                   className="electron-flow"
                   style={{
                     animationDuration: `${Math.min(2, Math.max(0.2, 0.15 / Math.sqrt(current)))}s`,
-                    animationDirection: isReversed ? 'reverse' : 'normal'
+                    animationDirection: isReversed ? 'reverse' : 'normal',
+                    filter: isWater ? 'drop-shadow(0 0 6px #00f0ff)' : undefined
                   }}
                 />
               )}
@@ -141,13 +157,27 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
             } text-xs font-bold text-text bg-background/80 px-2 py-1 rounded border border-border/30 shadow-lg whitespace-nowrap`}>
               {c.name}
             </div>
-            <ComponentRenderer component={c} />
+            <ComponentRenderer component={c} isWater={isWater} />
             <div className={`absolute z-20 ${
               c.metadata?.labelPos === 'left' ? 'right-full bottom-0 mr-3' :
               c.metadata?.labelPos === 'top' ? 'bottom-full mb-3' :
               isVertical ? 'left-full bottom-0 ml-3' : 'top-full mt-3'
             } px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[10px] text-text-muted font-mono whitespace-nowrap border border-border`}>
-              {c.type === 'Battery' ? (
+              {isWater ? (
+                c.metadata?.waterRole === 'pump' || c.type === 'Battery' ? (
+                  `${c.value.toFixed(1)} bar (${c.value.toFixed(1)}V) | ${c.current.toFixed(2)} L/s`
+                ) : c.metadata?.waterRole === 'valve' || c.type === 'Switch' ? (
+                  c.value === 1 ? 'VALVE OPEN (FLOWING)' : 'VALVE SHUT (BLOCKED)'
+                ) : c.metadata?.waterRole === 'constriction' || c.type === 'Resistor' ? (
+                  `Restriction: ${c.value.toFixed(1)} Ω | Flow: ${c.current.toFixed(2)} L/s`
+                ) : c.metadata?.waterRole === 'flowmeter' || c.type === 'Ammeter' ? (
+                  `Flow Rate: ${c.current.toFixed(2)} L/s (= ${c.current.toFixed(2)} A)`
+                ) : c.metadata?.waterRole === 'manometer' || c.type === 'Voltmeter' ? (
+                  `Pressure Drop: ${c.voltageDrop.toFixed(1)} bar (= ${c.voltageDrop.toFixed(1)} V)`
+                ) : (
+                  `${c.value} | ${formatCurrent(c.current)}`
+                )
+              ) : c.type === 'Battery' ? (
                 `${c.value.toFixed(2)}V | ${formatCurrent(c.current)}`
               ) : c.type === 'Switch' ? (
                 c.value === 1 ? 'CLOSED' : 'OPEN'
@@ -170,16 +200,115 @@ export default function CircuitCanvas({ circuit, components, onComponentClick }:
   );
 }
 
-function ComponentRenderer({ component }: { component: CircuitComponent }) {
+function ComponentRenderer({ component, isWater }: { component: CircuitComponent; isWater?: boolean }) {
   const isVertical = component.metadata?.orientation === 'vertical';
   const isActive = component.current > 0 || component.type === 'Ohmmeter';
-  let strokeColor = isActive ? "var(--color-accent)" : "rgba(255, 255, 255, 0.5)";
-  let glow = isActive ? "drop-shadow(0 0 8px var(--color-accent-glow))" : "none";
+  let strokeColor = isWater
+    ? (isActive ? "#00f0ff" : "rgba(100, 180, 255, 0.5)")
+    : (isActive ? "var(--color-accent)" : "rgba(255, 255, 255, 0.5)");
+  let glow = isActive
+    ? (isWater ? "drop-shadow(0 0 10px rgba(0, 240, 255, 0.7))" : "drop-shadow(0 0 8px var(--color-accent-glow))")
+    : "none";
   const bg = "var(--color-background)";
 
   let svgContent = null;
 
-  switch (component.type) {
+  // Custom Water Analogy Components
+  if (isWater && component.metadata?.waterRole) {
+    switch (component.metadata.waterRole) {
+      case 'pump':
+        svgContent = (
+          <>
+            <rect x="0" y="0" width="60" height="60" fill={bg} />
+            <line x1="0" y1="30" x2="12" y2="30" stroke="#133654" strokeWidth="8" />
+            <line x1="48" y1="30" x2="60" y2="30" stroke="#133654" strokeWidth="8" />
+            <line x1="0" y1="30" x2="12" y2="30" stroke={isActive ? "#00f0ff" : "#051a2e"} strokeWidth="4" />
+            <line x1="48" y1="30" x2="60" y2="30" stroke={isActive ? "#00f0ff" : "#051a2e"} strokeWidth="4" />
+            <circle cx="30" cy="30" r="18" fill="#082035" stroke={strokeColor} strokeWidth="2.5" />
+            <circle cx="30" cy="30" r="5" fill={strokeColor} />
+            <path d="M 30,25 Q 35,20 40,24 Q 35,27 30,25 Z" fill={strokeColor} opacity={isActive ? 0.9 : 0.4} />
+            <path d="M 35,30 Q 40,35 36,40 Q 33,35 35,30 Z" fill={strokeColor} opacity={isActive ? 0.9 : 0.4} />
+            <path d="M 30,35 Q 25,40 20,36 Q 25,33 30,35 Z" fill={strokeColor} opacity={isActive ? 0.9 : 0.4} />
+            <path d="M 25,30 Q 20,25 24,20 Q 27,25 25,30 Z" fill={strokeColor} opacity={isActive ? 0.9 : 0.4} />
+            <text x="30" y="44" fontSize="7" fontFamily="sans-serif" fontWeight="bold" fill={strokeColor} textAnchor="middle">PUMP</text>
+          </>
+        );
+        break;
+      case 'valve':
+        const isOpen = component.value === 1;
+        svgContent = (
+          <>
+            <rect x="0" y="0" width="60" height="60" fill={bg} />
+            <line x1="0" y1="30" x2="60" y2="30" stroke="#133654" strokeWidth="8" />
+            <line x1="0" y1="30" x2="60" y2="30" stroke={isOpen ? "#00f0ff" : "#051a2e"} strokeWidth="4" />
+            <polygon points="18,18 42,42 18,42 42,18" fill="#082035" stroke={strokeColor} strokeWidth="2" />
+            <line x1="30" y1="18" x2="30" y2="6" stroke={strokeColor} strokeWidth="3" />
+            <ellipse cx="30" cy="6" rx="10" ry="3" fill="#082035" stroke={strokeColor} strokeWidth="2" />
+            {!isOpen && (
+              <line x1="30" y1="20" x2="30" y2="40" stroke="#ff003c" strokeWidth="4" strokeLinecap="round" />
+            )}
+          </>
+        );
+        break;
+      case 'constriction':
+        svgContent = (
+          <>
+            <rect x="0" y="0" width="60" height="60" fill={bg} />
+            <path 
+              d="M 0,18 L 15,18 L 25,26 L 35,26 L 45,18 L 60,18 L 60,42 L 45,42 L 35,34 L 25,34 L 15,42 L 0,42 Z" 
+              fill="#082035" 
+              stroke={strokeColor} 
+              strokeWidth="2" 
+            />
+            <path 
+              d="M 0,30 L 60,30" 
+              stroke={isActive ? "#00f0ff" : "#051a2e"} 
+              strokeWidth={isActive ? 3 : 1} 
+            />
+            <line x1="30" y1="16" x2="30" y2="24" stroke={strokeColor} strokeWidth="1.5" />
+            <polygon points="30,24 28,21 32,21" fill={strokeColor} />
+            <line x1="30" y1="44" x2="30" y2="36" stroke={strokeColor} strokeWidth="1.5" />
+            <polygon points="30,36 28,39 32,39" fill={strokeColor} />
+          </>
+        );
+        break;
+      case 'flowmeter':
+        svgContent = (
+          <>
+            <rect x="0" y="0" width="60" height="60" fill={bg} />
+            <line x1="0" y1="30" x2="14" y2="30" stroke="#133654" strokeWidth="8" />
+            <line x1="46" y1="30" x2="60" y2="30" stroke="#133654" strokeWidth="8" />
+            <line x1="0" y1="30" x2="14" y2="30" stroke={isActive ? "#00f0ff" : "#051a2e"} strokeWidth="4" />
+            <line x1="46" y1="30" x2="60" y2="30" stroke={isActive ? "#00f0ff" : "#051a2e"} strokeWidth="4" />
+            <circle cx="30" cy="30" r="16" fill="#082035" stroke={strokeColor} strokeWidth="2" />
+            <circle cx="30" cy="30" r="4" fill={strokeColor} />
+            <line x1="30" y1="18" x2="30" y2="42" stroke={strokeColor} strokeWidth="2" />
+            <line x1="18" y1="30" x2="42" y2="30" stroke={strokeColor} strokeWidth="2" />
+            <text x="30" y="44" fontSize="7" fontFamily="sans-serif" fontWeight="bold" fill={strokeColor} textAnchor="middle">L/s</text>
+          </>
+        );
+        break;
+      case 'manometer':
+        svgContent = (
+          <>
+            <rect x="0" y="0" width="60" height="60" fill={bg} />
+            <line x1="0" y1="30" x2="14" y2="30" stroke="#133654" strokeWidth="4" />
+            <line x1="46" y1="30" x2="60" y2="30" stroke="#133654" strokeWidth="4" />
+            <circle cx="30" cy="30" r="16" fill="#082035" stroke={strokeColor} strokeWidth="2" />
+            <path d="M 20,34 A 12 12 0 1 1 40,34" fill="none" stroke={strokeColor} strokeWidth="1.5" strokeDasharray="2 3" />
+            <line x1="30" y1="30" x2="38" y2="22" stroke="#00f0ff" strokeWidth="2" strokeLinecap="round" />
+            <circle cx="30" cy="30" r="3" fill="#00f0ff" />
+            <text x="30" y="43" fontSize="7" fontFamily="sans-serif" fontWeight="bold" fill={strokeColor} textAnchor="middle">bar</text>
+          </>
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (!svgContent) {
+    switch (component.type) {
     case 'Battery':
       svgContent = (
         <>
@@ -356,6 +485,7 @@ function ComponentRenderer({ component }: { component: CircuitComponent }) {
            <line x1="0" y1="30" x2="60" y2="30" stroke={strokeColor} strokeWidth="2" />
          </>
       );
+    }
   }
 
   return (

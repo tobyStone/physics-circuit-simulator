@@ -160,25 +160,62 @@ export default function Simulator() {
         
         {/* Readings Overlay (Fixed) */}
         <div className="absolute top-6 right-6 flex gap-4 z-20 pointer-events-none">
-           {activeCircuit.metadata?.calculateTotalResistance && (
-             <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[120px] pointer-events-auto">
-                <span className="text-xs text-text-muted uppercase tracking-wider mb-1">Total Resistance</span>
-                <span className="text-2xl font-mono text-accent font-bold">
-                  {activeCircuit.metadata.calculateTotalResistance(safeComponents).toFixed(2)}
-                  <span className="text-sm text-accent/70 ml-1">Ω</span>
-                </span>
-             </div>
+           {activeCircuit.metadata?.isWater ? (
+             <>
+               <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[130px] pointer-events-auto border-cyan-500/30">
+                  <span className="text-xs text-cyan-400 font-semibold uppercase tracking-wider mb-1">Water Flow (I)</span>
+                  <span className="text-2xl font-mono text-cyan-300 font-bold">
+                    {(safeComponents.find(c => c.id === 'flowmeter1' || c.type === 'Ammeter')?.current ?? 0).toFixed(2)}
+                    <span className="text-sm text-cyan-400/80 ml-1">L/s</span>
+                  </span>
+                  <span className="text-[10px] text-text-muted mt-0.5 font-mono">
+                    = {(safeComponents.find(c => c.id === 'flowmeter1' || c.type === 'Ammeter')?.current ?? 0).toFixed(2)} A
+                  </span>
+               </div>
+               <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[130px] pointer-events-auto border-cyan-500/30">
+                  <span className="text-xs text-cyan-400 font-semibold uppercase tracking-wider mb-1">Pressure Diff (V)</span>
+                  <span className="text-2xl font-mono text-cyan-300 font-bold">
+                    {(safeComponents.find(c => c.id === 'pump1' || c.type === 'Battery')?.value ?? 0).toFixed(1)}
+                    <span className="text-sm text-cyan-400/80 ml-1">bar</span>
+                  </span>
+                  <span className="text-[10px] text-text-muted mt-0.5 font-mono">
+                    = {(safeComponents.find(c => c.id === 'pump1' || c.type === 'Battery')?.value ?? 0).toFixed(1)} V
+                  </span>
+               </div>
+               <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[130px] pointer-events-auto border-cyan-500/30">
+                  <span className="text-xs text-cyan-400 font-semibold uppercase tracking-wider mb-1">Restriction (R)</span>
+                  <span className="text-2xl font-mono text-cyan-300 font-bold">
+                    {(safeComponents.find(c => c.id === 'constriction1' || c.type === 'Resistor')?.value ?? 0).toFixed(1)}
+                    <span className="text-sm text-cyan-400/80 ml-1">Ω</span>
+                  </span>
+                  <span className="text-[10px] text-text-muted mt-0.5 font-mono">
+                    narrow pipe
+                  </span>
+               </div>
+             </>
+           ) : (
+             <>
+               {activeCircuit.metadata?.calculateTotalResistance && (
+                 <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[120px] pointer-events-auto">
+                    <span className="text-xs text-text-muted uppercase tracking-wider mb-1">Total Resistance</span>
+                    <span className="text-2xl font-mono text-accent font-bold">
+                      {activeCircuit.metadata.calculateTotalResistance(safeComponents).toFixed(2)}
+                      <span className="text-sm text-accent/70 ml-1">Ω</span>
+                    </span>
+                 </div>
+               )}
+               <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[120px] pointer-events-auto">
+                  <span className="text-xs text-text-muted uppercase tracking-wider mb-1">Max Current</span>
+                  <span className="text-2xl font-mono text-accent font-bold">
+                    {safeComponents.length > 0 ? (
+                       Math.max(...safeComponents.map(c => c.current)) > 900 
+                         ? <span className="text-[16px] text-red-500">SHORT CIRCUIT</span> 
+                         : <>{Math.max(...safeComponents.map(c => c.current)).toFixed(3)}<span className="text-sm text-accent/70 ml-1">A</span></>
+                    ) : "0.000A"}
+                  </span>
+               </div>
+             </>
            )}
-           <div className="glass-panel p-4 px-6 flex flex-col items-center min-w-[120px] pointer-events-auto">
-              <span className="text-xs text-text-muted uppercase tracking-wider mb-1">Max Current</span>
-              <span className="text-2xl font-mono text-accent font-bold">
-                {safeComponents.length > 0 ? (
-                   Math.max(...safeComponents.map(c => c.current)) > 900 
-                     ? <span className="text-[16px] text-red-500">SHORT CIRCUIT</span> 
-                     : <>{Math.max(...safeComponents.map(c => c.current)).toFixed(3)}<span className="text-sm text-accent/70 ml-1">A</span></>
-                ) : "0.000A"}
-              </span>
-           </div>
         </div>
 
         {/* Scrollable Canvas Container */}
